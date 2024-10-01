@@ -7,5 +7,5 @@
 .\objects\main.o: C:\Users\wongwh\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include\cmsis_compiler.h
 .\objects\main.o: C:\Users\wongwh\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include\cmsis_armcc.h
 .\objects\main.o: .\RTE\Device\MKL25Z128xxx4\system_MKL25Z4.h
-.\objects\main.o: led.c
-.\objects\main.o: uart.c
+.\objects\main.o: led.h
+.\objects\main.o: uart.h

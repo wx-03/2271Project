@@ -1,6 +1,6 @@
 #include "constants.c"
-#include "led.c"
-#include "uart.c"
+#include "led.h"
+#include "uart.h"
 
 int main(void)
 {
