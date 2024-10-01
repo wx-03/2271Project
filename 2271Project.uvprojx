@@ -386,6 +386,11 @@
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
             </File>
+            <File>
+              <FileName>constants.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\constants.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

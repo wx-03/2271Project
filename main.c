@@ -1,4 +1,15 @@
-#include "constants.h"
+#include "constants.c"
+#include "led.c"
+#include "uart.c"
+
+static void delay(volatile uint32_t nof)
+{
+    while (nof != 0)
+    {
+        __asm("NOP");
+        nof--;
+    }
+}
 
 int main(void)
 {
