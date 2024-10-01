@@ -1,5 +1,3 @@
-#include "constants.c"
-
 // Led Initialisation
 void initLED(void)
 {
@@ -20,4 +18,12 @@ void initLED(void)
 
     PTB->PSOR |= (MASK(RED_LED) | MASK(GREEN_LED));
     PTD->PSOR |= MASK(BLUE_LED);
+}
+
+void flashLed(void)
+{
+    PTB->PCOR |= MASK(RED_LED);
+    delayy(100000);
+    PTB->PCOR |= MASK(GREEN_LED);
+    delayy(100000);
 }

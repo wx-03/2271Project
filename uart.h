@@ -1,5 +1,3 @@
-#include "constants.c"
-
 // UART2 Initialisation
 void initUART2(void)
 {
