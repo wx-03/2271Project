@@ -1,4 +1,5 @@
 // UART2 Initialisation
+#include "constants.c"
 void initUART2(void)
 {
     uint32_t divisor, bus_clock;
