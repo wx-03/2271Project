@@ -22,8 +22,6 @@ void initLED(void)
 
 void flashLed(void)
 {
-    PTB->PCOR |= MASK(RED_LED);
-    delayy(100000);
-    PTB->PCOR |= MASK(GREEN_LED);
-    delayy(100000);
+    PTB->PTOR |= MASK(RED_LED);
+    delay(100000);
 }

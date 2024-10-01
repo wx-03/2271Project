@@ -1,6 +1,6 @@
 #include "constants.c"
-#include "led.c"
-#include "uart.c"
+#include "led.h"
+#include "uart.h"
 
 int main(void)
 {
@@ -9,10 +9,7 @@ int main(void)
     initUART2();
     while (1)
     {
-        if (1 == 1)
-        { // Off Red LED			
-            flashLed();
-        }
+        flashLed();
         // /* Rx and Tx*/
         // uint8_t rx_data = UART2_Receive_Poll();
         // if (rx_data == 0x30)
