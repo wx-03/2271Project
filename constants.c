@@ -9,7 +9,7 @@
 
 #define MASK(x) (1 << (x))
 
-static void delayy(volatile uint32_t nof)
+static void delay(volatile uint32_t nof)
 {
     while (nof != 0)
     {
