@@ -2,6 +2,7 @@
 #include "led.h"
 #include "uart.h"
 #define RLED 29 //portE pin 29
+#define CLOCK_SETUP 1
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 
@@ -78,7 +79,7 @@ int main(void)
 				if (i == 1) {
 					PTE->PTOR |= MASK(RLED);
 				}
-				delay(200000);
+				delay(120000);
 			}
     }
 }
