@@ -11,7 +11,8 @@
 #define G8 4 //portA pin 4
 #define G9 5 //portA pin 5
 #define G10 8 //portC pin 8
-#define RLED 4 //portD pin 4
+#define RLED 4 //portA pin 13
+#define blinkyDelay 2000000
 
 int initGPIO() {
 	// Enable Clock to PORTB and PORTD C
@@ -39,17 +40,18 @@ int initGPIO() {
 	PORTA->PCR[G9] |= PORT_PCR_MUX(1);
 	PORTC->PCR[G10] &= ~PORT_PCR_MUX_MASK;
 	PORTC->PCR[G10] |= PORT_PCR_MUX(1);
-	PORTD->PCR[RLED] &= ~PORT_PCR_MUX_MASK;
-	PORTD->PCR[RLED] |= PORT_PCR_MUX(1);
+	PORTA->PCR[RLED] &= ~PORT_PCR_MUX_MASK;
+	PORTA->PCR[RLED] |= PORT_PCR_MUX(1);
 
 	// Set Data Direction Registers for A PortC and PortD
-	PTD->PDDR |= MASK(G6) | MASK(RLED);
+	PTD->PDDR |= MASK(G6);
 	PTC->PDDR |= MASK(G1) | MASK(G2) | MASK(G3) | MASK(G4) | MASK(G5) | MASK(G10);
-	PTA->PDDR |= MASK(G7) | MASK(G8) | MASK(G9);
+	PTA->PDDR |= MASK(G7) | MASK(G8) | MASK(G9) | MASK(RLED);
 	//sets
 	//PTD->PSOR |= MASK(G1);
 	PTC->PCOR |= MASK(G1);
-	PTD->PSOR |= MASK(RLED);
+	PTA->PDOR |= MASK(RLED);
+	PTD->PDOR |= MASK(G10);
 }
 
 void tG1()
@@ -112,30 +114,29 @@ int main(void)
 	initGPIO();
   while (1)
     {
-			delay(2000);
-			PTD->PTOR |= MASK(G1);
-			/*
-			delay(2000);
+			delay(blinkyDelay);
+			PTC->PTOR |= MASK(G1);
+			
+			/*delay(blinkyDelay);
 			tG2();
-			delay(2000);
+			delay(blinkyDelay);
 			tG3();
-			delay(2000);
+			delay(blinkyDelay);
 			tG4();
-			delay(2000);
+			delay(blinkyDelay);
 			tG5();
-			delay(2000);
+			delay(blinkyDelay);
 			tG6();
-			delay(2000);
+			delay(blinkyDelay);
 			tG7();
-			delay(2000);
+			delay(blinkyDelay);
 			tG8();
-			delay(2000);
+			delay(blinkyDelay);
 			tG9();
-			delay(2000);
+			delay(blinkyDelay);
 			tG10();
-			delay(2000);
-			PTD->PTOR |= MASK(RLED);
+			delay(blinkyDelay);
 			*/
-				
+		
     }
 }
