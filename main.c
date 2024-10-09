@@ -11,36 +11,44 @@
 #define G8 4 //portA pin 4
 #define G9 5 //portA pin 5
 #define G10 8 //portC pin 8
-#define RLED 4 //portD pin 4
+#define RLED 13 //portA pin 13
+
+uint8_t greenPins[] = {3, 4, 5, 6, 10, 4, 12, 4, 5, 8};
+uint8_t GreenPortC1[] = {3, 4, 5, 6, 10};
+uint8_t GreenPortD[] = {4};
+uint8_t GreenPortA[] = {12, 4, 5};
+uint8_t GreenPortC2[] = {8};
 
 int initGPIO() {
 	// Enable Clock to PORTB and PORTD C
 
 	SIM->SCGC5 |= ((SIM_SCGC5_PORTA_MASK) | (SIM_SCGC5_PORTD_MASK) | (SIM_SCGC5_PORTC_MASK));
 	// Configure MUX settings to make all 3 pins GPIO
-
-	PORTC->PCR[G1] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[G1] |= PORT_PCR_MUX(1);
-	PORTC->PCR[G2] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[G2] |= PORT_PCR_MUX(1);
-	PORTC->PCR[G3] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[G3] |= PORT_PCR_MUX(1);
-	PORTC->PCR[G4] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[G4] |= PORT_PCR_MUX(1);
-	PORTC->PCR[G5] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[G5] |= PORT_PCR_MUX(1);
-	PORTD->PCR[G6] &= ~PORT_PCR_MUX_MASK;
-	PORTD->PCR[G6] |= PORT_PCR_MUX(1);
-	PORTA->PCR[G7] &= ~PORT_PCR_MUX_MASK;
-	PORTA->PCR[G7] |= PORT_PCR_MUX(1);
-	PORTA->PCR[G8] &= ~PORT_PCR_MUX_MASK;
-	PORTA->PCR[G8] |= PORT_PCR_MUX(1);
-	PORTA->PCR[G9] &= ~PORT_PCR_MUX_MASK;
-	PORTA->PCR[G9] |= PORT_PCR_MUX(1);
-	PORTC->PCR[G10] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[G10] |= PORT_PCR_MUX(1);
-	PORTD->PCR[RLED] &= ~PORT_PCR_MUX_MASK;
-	PORTD->PCR[RLED] |= PORT_PCR_MUX(1);
+	
+	int i = 0;
+	for (; i < 5; i++) {
+		int pinNo = greenPins[i];
+		PORTC->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
+		PORTC->PCR[pinNo] |= PORT_PCR_MUX(1);
+	}
+	for (; i < 1; i++) {
+		int pinNo = greenPins[i];
+		PORTD->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
+		PORTD->PCR[pinNo] |= PORT_PCR_MUX(1);
+	}
+	for (; i < 3; i++) {
+		int pinNo = greenPins[i];
+		PORTA->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
+		PORTA->PCR[pinNo] |= PORT_PCR_MUX(1);
+	}
+	for (; i < 1; i++) {
+		int pinNo = greenPins[i];
+		PORTC->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
+		PORTC->PCR[pinNo] |= PORT_PCR_MUX(1);
+	}
+	
+	PORTA->PCR[RLED] &= ~PORT_PCR_MUX_MASK;
+	PORTA->PCR[RLED] |= PORT_PCR_MUX(1);
 
 	// Set Data Direction Registers for A PortC and PortD
 	PTD->PDDR |= MASK(G6) | MASK(RLED);
@@ -54,7 +62,7 @@ int initGPIO() {
 
 void tG1()
 {
-	PTD->PTOR |= MASK(G1);
+	PTC->PTOR |= MASK(G1);
 }
 
 void tG2()
@@ -99,7 +107,7 @@ void tG9()
 
 void tG10()
 {
-	PTD->PTOR |= MASK(G10);
+	PTC->PTOR |= MASK(G10);
 }
 
 int main(void)
@@ -112,15 +120,16 @@ int main(void)
 	initGPIO();
   while (1)
     {
-			delay(2000);
-			PTD->PTOR |= MASK(G1);
-			/*
-			delay(2000);
+			delay(200000);
+			PTC->PTOR |= MASK(G1);
+			
+			delay(200000);
 			tG2();
-			delay(2000);
+			delay(200000);
 			tG3();
-			delay(2000);
+			delay(200000);
 			tG4();
+			/*
 			delay(2000);
 			tG5();
 			delay(2000);
