@@ -11,7 +11,7 @@
 #define G8 4 //portA pin 4
 #define G9 5 //portA pin 5
 #define G10 8 //portC pin 8
-#define RLED 4 //portA pin 13
+#define RLED 13 //portA pin 13
 #define blinkyDelay 2000000
 
 int initGPIO() {
@@ -51,7 +51,7 @@ int initGPIO() {
 	//PTD->PSOR |= MASK(G1);
 	PTC->PCOR |= MASK(G1);
 	PTA->PDOR |= MASK(RLED);
-	PTD->PDOR |= MASK(G10);
+	PTC->PDOR |= MASK(G10);
 }
 
 void tG1()
