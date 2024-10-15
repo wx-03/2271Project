@@ -7,7 +7,6 @@
 #include CMSIS_device_header
 #include "cmsis_os2.h"
 #include "led.h"
-#include "uart.h"
 #define RLED 29 // portE pin 29
 #define CLOCK_SETUP 1
 #define BUZZER_PIN 0
@@ -23,8 +22,9 @@
 
 osSemaphoreId_t brainSem;
 osSemaphoreId_t motorSem;
-float leftDc = 0;
-float rightDc = 0;
+#include "uart.h"
+volatile float leftDc = 0;
+volatile float rightDc = 0;
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 uint8_t pinsB[] = {8, 9, 10, 11};
@@ -220,7 +220,7 @@ void brain_main(void *argument)
 		osSemaphoreAcquire(brainSem, osWaitForever);
 		leftDc = ((uartData >> 4) - 7) / 8;
 		rightDc = ((uartData &= 00001111) - 7) / 8;
-		osSempaphoreRelease(motorSem)
+		osSemaphoreRelease(motorSem);
 	}
 }
 
@@ -228,7 +228,7 @@ void motor_main(void *argument)
 {
 	for (;;)
 	{
-		osSemaphoreAcquire(motorSem, osWaitFoerver);
+		osSemaphoreAcquire(motorSem, osWaitForever);
 		if (leftDc > 0)
 		{
 			PTC->PSOR |= MASK(LEFT_MOTOR_IN1_PIN);
