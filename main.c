@@ -15,11 +15,12 @@
 #define isMoving 1
 
 
+
+
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 
 uint8_t pinsB[] = {8, 9, 10, 11};
 uint8_t pinsE[] = {2, 3, 4, 5, 20, 21};
-// uint8_t pinsC[] = {9};
 uint32_t frequencies_mod[] = {1000};
 
 void initGPIO() {
@@ -45,7 +46,7 @@ void initGPIO() {
 	PORTE->PCR[RLED] |= PORT_PCR_MUX(1);
 	
 
-	// Set Data Direction Registers for A PortC and PortD
+	// Set Data Direction Registers for PortB and PortE
 	
 	i = 0;
 	for (; i < 4; i++) {
@@ -58,6 +59,7 @@ void initGPIO() {
 	}
 	
 	PTE->PDDR |= MASK(RLED);
+	
 	// Clear all pins
 	for (int j = 0; j < 10; j++) {
 		int pinNo = greenPins[i];
@@ -158,7 +160,6 @@ int main(void)
   SystemCoreClockUpdate();
 	initGPIO();
 	initPWM();
-	// int i = 0;
 	
   osKernelInitialize();                 // Initialize CMSIS-RTOS
   osThreadNew(red_blinky_main, NULL, NULL);    // Create application main thread
