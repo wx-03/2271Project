@@ -12,14 +12,15 @@
 #define RLED 29 //portE pin 29
 #define CLOCK_SETUP 1
 #define PTB0_Pin 0
-#define isMoving 0
+#define isMoving 1
+
+
 
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 
 uint8_t pinsB[] = {8, 9, 10, 11};
 uint8_t pinsE[] = {2, 3, 4, 5, 20, 21};
-// uint8_t pinsC[] = {9};
 uint32_t frequencies_mod[] = {1000};
 
 void initGPIO() {
@@ -45,7 +46,7 @@ void initGPIO() {
 	PORTE->PCR[RLED] |= PORT_PCR_MUX(1);
 	
 
-	// Set Data Direction Registers for A PortC and PortD
+	// Set Data Direction Registers for PortB and PortE
 	
 	i = 0;
 	for (; i < 4; i++) {
@@ -58,7 +59,8 @@ void initGPIO() {
 	}
 	
 	PTE->PDDR |= MASK(RLED);
-	//sets
+	
+	// Clear all pins
 	for (int j = 0; j < 10; j++) {
 		int pinNo = greenPins[i];
 		if (0 <= j && j <= 3) {
@@ -112,27 +114,33 @@ void red_blinky_main(void *argument)
 void green_blinky_main(void *argument)
 {
 	for (;;) {
-		if (!isMoving)
+		if (isMoving)
 		{
+			// Running Mode
 			for (int i = 0; i < 10; i++) {
 				if (0 <= i && i <= 3) {
 					PTB->PTOR |= MASK(greenPins[i]);
 				} else {
 					PTE->PTOR |= MASK(greenPins[i]);
 				}
-				osDelay(250U);
-			}
+				osDelay(250U);	
+				if (0 <= i && i <= 3) {
+					PTB->PTOR |= MASK(greenPins[i]);
+				} else {
+					PTE->PTOR |= MASK(greenPins[i]);
+				}
+			}	
 		}
 		else
 		{
+			// Light up all
 			for (int i = 0; i < 10; i++) {
 				if (0 <= i && i <= 3) {
-					PTB->PTOR |= MASK(greenPins[i]);
+					PTB->PSOR |= MASK(greenPins[i]);
 				} else {
-					PTE->PTOR |= MASK(greenPins[i]);
+					PTE->PSOR |= MASK(greenPins[i]);
 				}
-				osDelay(250U);
-			}
+			}			
 		}
 	}
 }
@@ -152,7 +160,6 @@ int main(void)
   SystemCoreClockUpdate();
 	initGPIO();
 	initPWM();
-	// int i = 0;
 	
   osKernelInitialize();                 // Initialize CMSIS-RTOS
   osThreadNew(red_blinky_main, NULL, NULL);    // Create application main thread
