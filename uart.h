@@ -1,3 +1,5 @@
+volatile uint8_t uartData = 0;
+
 // UART2 Initialisation
 void initUART2(void)
 {
@@ -20,10 +22,12 @@ void initUART2(void)
     NVIC_EnableIRQ(UART2_IRQn);
 }
 
-// UART2 Receive Poll
-uint8_t UART2_Receive_Poll(void)
+void UART2_IRQHandler()
 {
-    while (!(UART2->S1 & UART_S1_RDRF_MASK))
-        ;
-    return (UART2->D);
+    NVIC_ClearPendingIRQ(UART2_IRQn);
+    osSemaphoreRelease(brainSem);
+    if (UART2->S1 & UART_S1_RDRF_MASK)
+    {
+        uartData = UART2->D;
+    }
 }

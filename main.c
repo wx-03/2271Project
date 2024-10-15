@@ -6,16 +6,20 @@
 #include "RTE_Components.h"
 #include CMSIS_device_header
 #include "cmsis_os2.h"
-
 #include "led.h"
 #include "uart.h"
 #define RLED 29 // portE pin 29
 #define CLOCK_SETUP 1
 #define BUZZER_PIN 0
-#define LEFT_MOTOR_PIN 0
-#define RIGHT_MOTOR_PIN 1
-#define isMoving 0
+#define LEFT_MOTOR_PWM_PIN 1
+#define RIGHT_MOTOR_PWM_PIN 2
+#define LEFT_MOTOR_IN1_PIN 6
+#define LEFT_MOTOR_IN2_PIN 5
+#define RIGHT_MOTOR_IN1_PIN 4
+#define RIGHT_MOTOR_IN2_PIN 3
+
 #define TIMER_THRESHOLD 7499
+#define isMoving 0
 
 osSemaphoreId_t brainSem;
 osSemaphoreId_t motorSem;
@@ -23,13 +27,17 @@ float leftDc = 0;
 float rightDc = 0;
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
-
 uint8_t pinsB[] = {8, 9, 10, 11};
 uint8_t pinsE[] = {2, 3, 4, 5, 20, 21};
 // uint8_t pinsC[] = {9};
 uint32_t frequencies_mod[] = {1000};
 
-void initGPIO()
+const osThreadAttr_t priorityHigh = {
+	.priority = osPriorityHigh};
+const osThreadAttr_t priorityMax = {
+	.priority = osPriorityRealtime};
+
+void initLedGpio()
 {
 	// Enable Clock to PORTB and PORTD C
 
@@ -84,12 +92,25 @@ void initGPIO()
 	PTE->PCOR |= MASK(RLED);
 }
 
+void initMotorDriverGpio()
+{
+	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
+	PORTC->PCR[LEFT_MOTOR_IN1_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[LEFT_MOTOR_IN1_PIN] |= PORT_PCR_MUX(1);
+	PORTC->PCR[LEFT_MOTOR_IN2_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[LEFT_MOTOR_IN2_PIN] |= PORT_PCR_MUX(1);
+	PORTC->PCR[RIGHT_MOTOR_IN1_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[RIGHT_MOTOR_IN1_PIN] |= PORT_PCR_MUX(1);
+	PORTC->PCR[RIGHT_MOTOR_IN2_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[RIGHT_MOTOR_IN2_PIN] |= PORT_PCR_MUX(1);
+}
+
 void initMotorPWM(void)
 {
-	PORTB->PCR[LEFT_MOTOR_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[LEFT_MOTOR_PIN] |= PORT_PCR_MUX(3);
-	PORTB->PCR[RIGHT_MOTOR_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[RIGHT_MOTOR_PIN] |= PORT_PCR_MUX(3);
+	PORTB->PCR[LEFT_MOTOR_PWM_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTB->PCR[LEFT_MOTOR_PWM_PIN] |= PORT_PCR_MUX(3);
+	PORTB->PCR[RIGHT_MOTOR_PWM_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTB->PCR[RIGHT_MOTOR_PWM_PIN] |= PORT_PCR_MUX(3);
 	SIM->SCGC6 |= SIM_SCGC6_TPM2_MASK;
 	// SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
 	// SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
@@ -208,6 +229,28 @@ void motor_main(void *argument)
 	for (;;)
 	{
 		osSemaphoreAcquire(motorSem, osWaitFoerver);
+		if (leftDc > 0)
+		{
+			PTC->PSOR |= MASK(LEFT_MOTOR_IN1_PIN);
+			PTC->PCOR |= MASK(LEFT_MOTOR_IN2_PIN);
+		}
+		else
+		{
+			PTC->PCOR |= MASK(LEFT_MOTOR_IN1_PIN);
+			PTC->PSOR |= MASK(LEFT_MOTOR_IN2_PIN);
+			leftDc = -leftDc;
+		}
+		if (rightDc > 0)
+		{
+			PTC->PSOR |= MASK(RIGHT_MOTOR_IN1_PIN);
+			PTC->PCOR |= MASK(RIGHT_MOTOR_IN2_PIN);
+		}
+		else
+		{
+			PTC->PCOR |= MASK(RIGHT_MOTOR_IN1_PIN);
+			PTC->PSOR |= MASK(RIGHT_MOTOR_IN2_PIN);
+			rightDc = -rightDc;
+		}
 		TPM2_C0V = TIMER_THRESHOLD * leftDc;
 		TPM2_C1V = TIMER_THRESHOLD * rightDc;
 	}
@@ -216,15 +259,20 @@ void motor_main(void *argument)
 int main(void)
 {
 	SystemCoreClockUpdate();
-	initGPIO();
-	initBuzzerPWM;
+	initUART2();
+	initLedGpio();
+	initMotorDriverGpio();
+	initBuzzerPWM();
 	initMotorPWM();
-	brainSem = osSemaphoreNew(1, 0, NULL);
-	// int i = 0;
 
-	osKernelInitialize();						// Initialize CMSIS-RTOS
-	osThreadNew(red_blinky_main, NULL, NULL);	// Create application main thread
-	osThreadNew(green_blinky_main, NULL, NULL); // Create application main thread
+	brainSem = osSemaphoreNew(1, 0, NULL);
+	motorSem = osSemaphoreNew(1, 0, NULL);
+
+	osKernelInitialize(); // Initialize CMSIS-RTOS
+	osThreadNew(brain_main, NULL, &priorityMax);
+	osThreadNew(motor_main, NULL, &priorityHigh);
+	osThreadNew(red_blinky_main, NULL, NULL);
+	osThreadNew(green_blinky_main, NULL, NULL);
 	osThreadNew(buzz_main, NULL, NULL);
 	osKernelStart(); // Start thread execution
 	for (;;)
