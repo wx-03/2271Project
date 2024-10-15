@@ -15,6 +15,9 @@ void initUART2(void)
     UART2->S2 = 0;
     UART2->C3 = 0;
     UART2->C2 |= UART_C2_RE_MASK;
+    NVIC_SetPriority(UART2_IRQn, 128);
+    NVIC_ClearPendingIRQ(UART2_IRQn);
+    NVIC_EnableIRQ(UART2_IRQn);
 }
 
 // UART2 Receive Poll
