@@ -11,17 +11,29 @@
 #include "uart.h"
 #define RLED 29 //portE pin 29
 #define CLOCK_SETUP 1
-#define PTB0_Pin 0
+#define BUZZ 12
 #define isMoving 1
 
 
-
+const int c = 523;
+const int d = 587;
+const int e = 659;
+const int f = 698;
+const int g = 784;
+const int a = 880;
+const int b = 988;
+const int C = 1047;
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 
 uint8_t pinsB[] = {8, 9, 10, 11};
 uint8_t pinsE[] = {2, 3, 4, 5, 20, 21};
 uint32_t frequencies_mod[] = {1000};
+
+// Set up the sequence of notes and their durations in milliseconds
+const int melody[] = { c, c, g, g, a, a, g, f, f, e, e, d, d, c, g, g, f, f, e, e, d, g, g, f, f, e, e, d, c, c, g, g, a, a, g, f, f, e, e, d, d, c };
+int noteDurations[] = { 500, 500, 500, 500, 500, 500, 1000, 500, 500, 500, 500, 500, 500, 1000, 500, 500, 500, 500, 500, 500, 1000, 500, 500, 500, 500, 500, 500, 1000, 500, 500, 500, 500, 500, 500, 1000, 500, 500, 500, 500, 500, 500, 1000 };
+int melodySize = sizeof(melody) / sizeof(melody[0]);
 
 void initGPIO() {
 	// Enable Clock to PORTB and PORTD C
@@ -74,9 +86,9 @@ void initGPIO() {
 
 void initPWM(void)
 {
-  SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK;
-  PORTB->PCR [PTB0_Pin] &= ~PORT_PCR_MUX_MASK; 
-	PORTB->PCR [PTB0_Pin] |= PORT_PCR_MUX (3);
+  SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
+  PORTA->PCR [BUZZ] &= ~PORT_PCR_MUX_MASK; 
+	PORTA->PCR [BUZZ] |= PORT_PCR_MUX (3);
   SIM->SCGC6 |= SIM_SCGC6_TPM1_MASK;
   SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK; 
   SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
@@ -86,14 +98,14 @@ void initPWM(void)
 	TPM1->SC &= ~(TPM_SC_CPWMS_MASK);
   TPM1_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK)); 
 	TPM1_C0SC |= (TPM_CnSC_ELSB (1) | TPM_CnSC_MSB (1));
-  TPM1_C0V = 7499/2;
+  TPM1_C0V = 7499/16;
 }
 
 void change_frequency(int frequency)
 {
   int mod_value = 375000/frequency - 1;
   TPM1->MOD = mod_value;
-  TPM1_C0V = mod_value / 2;
+  TPM1_C0V = mod_value / 16;
 }
 
 void red_blinky_main(void *argument)
@@ -145,13 +157,19 @@ void green_blinky_main(void *argument)
 	}
 }
 
+
+
 void buzz_main(void *argument)
 {
+	int i = 0;
+	
+	int major[] = {c, d ,e ,f ,g, a, b, C};
 	for (;;) {
-		change_frequency(442);
-		osDelay(1000U);
-		change_frequency(800);
-		osDelay(1000U);
+		change_frequency(melody[i]);
+		osDelay(noteDurations[i]);
+		// change_frequency(0);
+		// osDelay(5);
+		i = (i + 1) % (sizeof(melody) / sizeof(melody[0]));
 	}
 }
 
