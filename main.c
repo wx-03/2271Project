@@ -10,10 +10,10 @@
 #define RLED 29 // portE pin 29
 #define CLOCK_SETUP 1
 #define BUZZER_PIN 0
-#define LEFT_MOTOR_PWM_PIN 1
-#define RIGHT_MOTOR_PWM_PIN 2
-#define LEFT_MOTOR_IN2_PIN 3
-#define RIGHT_MOTOR_IN2_PIN 2
+#define LEFT_MOTOR_PWM_IN1_PIN 2 // PB2 - TPM2_CH0
+#define LEFT_MOTOR_PWM_IN2_PIN 3 // PB3 - TPM2_CH1
+#define RIGHT_MOTOR_PWM_IN1_PIN 1 // PC1 - 	TPM0_CH0
+#define RIGHT_MOTOR_PWM_IN2_PIN 2 // PC2 - TPM0_CH1
 
 #define TIMER_THRESHOLD 7499
 #define isMoving 0
@@ -90,34 +90,50 @@ void initLedGpio()
 	PTE->PCOR |= MASK(RLED);
 }
 
-void initMotorDriverGpio()
-{
-	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
-	PORTB->PCR[LEFT_MOTOR_IN2_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[LEFT_MOTOR_IN2_PIN] |= PORT_PCR_MUX(1);
-	PORTC->PCR[RIGHT_MOTOR_IN2_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTC->PCR[RIGHT_MOTOR_IN2_PIN] |= PORT_PCR_MUX(1);
-}
-
 void initMotorPWM(void)
 {
-	PORTB->PCR[LEFT_MOTOR_PWM_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[LEFT_MOTOR_PWM_PIN] |= PORT_PCR_MUX(3);
-	PORTB->PCR[RIGHT_MOTOR_PWM_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[RIGHT_MOTOR_PWM_PIN] |= PORT_PCR_MUX(3);
-	SIM->SCGC6 |= SIM_SCGC6_TPM2_MASK;
-	// SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
-	// SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
+	
+	PORTB->PCR[LEFT_MOTOR_PWM_IN1_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTB->PCR[LEFT_MOTOR_PWM_IN1_PIN] |= PORT_PCR_MUX(3);
+	PORTB->PCR[LEFT_MOTOR_PWM_IN2_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTB->PCR[LEFT_MOTOR_PWM_IN2_PIN] |= PORT_PCR_MUX(3);
+	
+	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
+	PORTC->PCR[RIGHT_MOTOR_PWM_IN1_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[RIGHT_MOTOR_PWM_IN1_PIN] |= PORT_PCR_MUX(4);
+	PORTC->PCR[RIGHT_MOTOR_PWM_IN2_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[RIGHT_MOTOR_PWM_IN2_PIN] |= PORT_PCR_MUX(4);
+	
+	
+	SIM->SCGC6 |= (SIM_SCGC6_TPM2_MASK | SIM_SCGC6_TPM0_MASK);
+	SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
+	SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
+	
+	
 	TPM2->MOD = TIMER_THRESHOLD;
 	TPM2->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
 	TPM2->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
 	TPM2->SC &= ~(TPM_SC_CPWMS_MASK);
+	
+	TPM0->MOD = TIMER_THRESHOLD;
+	TPM0->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
+	TPM0->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
+	TPM0->SC &= ~(TPM_SC_CPWMS_MASK);
+	
 	TPM2_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
-	TPM2_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
+	TPM2_C0SC |= (TPM_CnSC_ELSA(1) | TPM_CnSC_MSB(1));
 	TPM2_C1SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
-	TPM2_C1SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
-	TPM2_C0V = 0;
-	TPM2_C1V = 0;
+	TPM2_C1SC |= (TPM_CnSC_ELSA(1) | TPM_CnSC_MSB(1));
+	TPM2_C0V = TIMER_THRESHOLD;
+	TPM2_C1V = TIMER_THRESHOLD;
+	
+	TPM0_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
+	TPM0_C0SC |= (TPM_CnSC_ELSA(1) | TPM_CnSC_MSB(1));
+	TPM0_C1SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
+	TPM0_C1SC |= (TPM_CnSC_ELSA(1) | TPM_CnSC_MSB(1));
+	TPM0_C0V = TIMER_THRESHOLD;
+	TPM0_C1V = TIMER_THRESHOLD;
+	
 }
 
 void initBuzzerPWM(void)
@@ -222,27 +238,39 @@ void motor_main(void *argument)
 {
 	for (;;)
 	{
-		osSemaphoreAcquire(motorSem, osWaitForever);
-		if (leftDc > 0)
-		{
-			PTB->PCOR |= MASK(LEFT_MOTOR_IN2_PIN);
-		}
-		else
-		{
-			PTB->PSOR |= MASK(LEFT_MOTOR_IN2_PIN);
-			leftDc = -leftDc;
-		}
-		if (rightDc > 0)
-		{
-			PTC->PCOR |= MASK(RIGHT_MOTOR_IN2_PIN);
-		}
-		else
-		{
-			PTC->PSOR |= MASK(RIGHT_MOTOR_IN2_PIN);
-			rightDc = -rightDc;
-		}
-		TPM2_C0V = TIMER_THRESHOLD * leftDc;
-		TPM2_C1V = TIMER_THRESHOLD * rightDc;
+		// osSemaphoreAcquire(motorSem, osWaitForever);
+		// if (leftDc > 0)
+		// {
+		// 	PTC->PCOR |= MASK(LEFT_MOTOR_IN2_PIN);
+		// }
+		// else
+		// {
+		// 	PTC->PSOR |= MASK(LEFT_MOTOR_IN2_PIN);
+		// 	leftDc = -leftDc;
+		// }
+		// if (rightDc > 0)
+		// {
+		// 	PTC->PCOR |= MASK(RIGHT_MOTOR_IN2_PIN);
+		// }
+		// else
+		// {
+		// 	PTC->PSOR |= MASK(RIGHT_MOTOR_IN2_PIN);
+		// 	rightDc = -rightDc;
+		// }
+		// TPM2_C0V = TIMER_THRESHOLD * leftDc;
+		// TPM2_C1V = TIMER_THRESHOLD * rightDc;
+		TPM2_C0V = TIMER_THRESHOLD;
+		TPM2_C1V = 0;
+		TPM0_C0V = TIMER_THRESHOLD;
+		TPM0_C1V = 0;
+		/*
+		osDelay(1000);
+		TPM2_C0V = 0;
+		TPM2_C1V = TIMER_THRESHOLD;
+		TPM0_C0V = 0;
+		TPM0_C1V = TIMER_THRESHOLD;
+		osDelay(1000);
+		*/
 	}
 }
 
@@ -251,7 +279,6 @@ int main(void)
 	SystemCoreClockUpdate();
 	initUART2();
 	initLedGpio();
-	initMotorDriverGpio();
 	initBuzzerPWM();
 	initMotorPWM();
 
@@ -259,7 +286,7 @@ int main(void)
 	motorSem = osSemaphoreNew(1, 0, NULL);
 
 	osKernelInitialize(); // Initialize CMSIS-RTOS
-	osThreadNew(brain_main, NULL, &priorityMax);
+	// osThreadNew(brain_main, NULL, &priorityMax);
 	osThreadNew(motor_main, NULL, &priorityHigh);
 	osThreadNew(red_blinky_main, NULL, NULL);
 	osThreadNew(green_blinky_main, NULL, NULL);
