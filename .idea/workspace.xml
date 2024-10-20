@@ -3,12 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="8acd2632-6071-47bd-bc08-c49529b755de" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/2271Project.uvguix.pingh" beforeDir="false" afterPath="$PROJECT_DIR$/2271Project.uvguix.pingh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Listings/2271Project.map" beforeDir="false" afterPath="$PROJECT_DIR$/Listings/2271Project.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Objects/2271Project.axf" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/2271Project.axf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Objects/2271Project.build_log.htm" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/2271Project.build_log.htm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Objects/2271Project.htm" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/2271Project.htm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Objects/2271Project_Target 1.dep" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/2271Project_Target 1.dep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Objects/constants.crf" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/constants.crf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Objects/constants.o" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/constants.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Objects/main.crf" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/main.crf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Objects/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/Objects/main.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants.c" beforeDir="false" afterPath="$PROJECT_DIR$/constants.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,9 +23,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2nbmOVA2DQUHpTShvxM9kw8a9wb" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -33,7 +38,7 @@
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/pingh/OneDrive/Desktop/CG2271/Project",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
+    "project.structure.last.edited": "Facets",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "vue.rearranger.settings.migration": "true"
@@ -56,6 +61,7 @@
       <option name="presentableId" value="Default" />
       <updated>1729250117778</updated>
       <workItem from="1729250118963" duration="82000" />
+      <workItem from="1729390378949" duration="82000" />
     </task>
     <servers />
   </component>
