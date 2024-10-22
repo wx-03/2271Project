@@ -43,7 +43,7 @@ function combine4BitValues(left4Bit, right4Bit) {
 
 export function Test() {
   const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
-  const [binarySpeed, setBinarySpeed] = useState("01110111");
+  const [binarySpeed, setBinarySpeed] = useState(119);
   const [currTime, setCurrTime] = useState(Date.now());
 
   function callReq() {
@@ -71,13 +71,13 @@ export function Test() {
     const rightWheel4Bit = mapSpeedTo4Bit(rightWheelSpeed);
     const combined8BitValue = combine4BitValues(leftWheel4Bit, rightWheel4Bit);
 
-    const binaryValue = combined8BitValue.toString(2).padStart(8, "0");
-    setBinarySpeed(binaryValue);
+    //const binaryValue = combined8BitValue.toString(2).padStart(8, "0");
+    setBinarySpeed(combined8BitValue);
     if (Date.now() - currTime > 1000) {
       setCurrTime(Date.now());
       callReq();
     } 
-    console.log("Combined 8-bit Value (Binary):", binaryValue);
+    console.log("Combined 8-bit Value (Binary):", combined8BitValue);
   };
 
   const handleStop = () => {
