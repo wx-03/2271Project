@@ -23,88 +23,90 @@ const osThreadAttr_t priorityMax = {
 
 void initLedGpio()
 {
-    // Enable Clock to PORTB and PORTD C
+	// Enable Clock to PORTB and PORTD C
 
-    SIM->SCGC5 |= ((SIM_SCGC5_PORTB_MASK) | (SIM_SCGC5_PORTE_MASK));
-    // Configure MUX settings to make all 3 pins GPIO
+	SIM->SCGC5 |= ((SIM_SCGC5_PORTB_MASK) | (SIM_SCGC5_PORTE_MASK));
+	// Configure MUX settings to make all 3 pins GPIO
 
-    uint8_t i = 0;
-    for (; i < 4; i++)
-    {
-        int pinNo = greenPins[i];
-        PORTB->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
-        PORTB->PCR[pinNo] |= PORT_PCR_MUX(1);
-    }
-    for (; i < 10; i++)
-    {
-        int pinNo = greenPins[i];
-        PORTE->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
-        PORTE->PCR[pinNo] |= PORT_PCR_MUX(1);
-    }
+	uint8_t i = 0;
+	for (; i < 4; i++)
+	{
+		int pinNo = greenPins[i];
+		PORTB->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
+		PORTB->PCR[pinNo] |= PORT_PCR_MUX(1);
+	}
+	for (; i < 10; i++)
+	{
+		int pinNo = greenPins[i];
+		PORTE->PCR[pinNo] &= ~PORT_PCR_MUX_MASK;
+		PORTE->PCR[pinNo] |= PORT_PCR_MUX(1);
+	}
 
-    PORTE->PCR[RLED] &= ~PORT_PCR_MUX_MASK;
-    PORTE->PCR[RLED] |= PORT_PCR_MUX(1);
+	PORTE->PCR[RLED] &= ~PORT_PCR_MUX_MASK;
+	PORTE->PCR[RLED] |= PORT_PCR_MUX(1);
 
-    // Set Data Direction Registers for A PortC and PortD
+	// Set Data Direction Registers for A PortC and PortD
 
-    i = 0;
-    for (; i < 4; i++)
-    {
-        int pinNo = greenPins[i];
-        PTB->PDDR |= MASK(pinNo);
-    }
-    for (; i < 10; i++)
-    {
-        int pinNo = greenPins[i];
-        PTE->PDDR |= MASK(pinNo);
-    }
+	i = 0;
+	for (; i < 4; i++)
+	{
+		int pinNo = greenPins[i];
+		PTB->PDDR |= MASK(pinNo);
+	}
+	for (; i < 10; i++)
+	{
+		int pinNo = greenPins[i];
+		PTE->PDDR |= MASK(pinNo);
+	}
 
-    PTE->PDDR |= MASK(RLED);
-    // sets
-    for (int j = 0; j < 10; j++)
-    {
-        int pinNo = greenPins[i];
-        if (0 <= j && j <= 3)
-        {
-            PTB->PCOR |= MASK(pinNo);
-        }
-        else
-        {
-            PTE->PCOR |= MASK(pinNo);
-        }
-    }
+	PTE->PDDR |= MASK(RLED);
+	// sets
+	for (int j = 0; j < 10; j++)
+	{
+		int pinNo = greenPins[i];
+		if (0 <= j && j <= 3)
+		{
+			PTB->PCOR |= MASK(pinNo);
+		}
+		else
+		{
+			PTE->PCOR |= MASK(pinNo);
+		}
+	}
 }
 
 // UART2 Initialisation
 void initUART2(void)
 {
-    SIM->SCGC4 |= SIM_SCGC4_UART2_MASK;
-    SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;
-    PORTE->PCR[UART_RX_PIN] &= ~PORT_PCR_MUX_MASK;
-    PORTE->PCR[UART_RX_PIN] |= PORT_PCR_MUX(4);
-    // PORTE->PCR[22] &= ~PORT_PCR_MUX_MASK;
-    // PORTE->PCR[22] |= PORT_PCR_MUX(4);
-    UART2->C2 &= ~(UART_C2_RE_MASK);
+	SIM->SCGC4 |= SIM_SCGC4_UART2_MASK;
+	SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;
+	PORTE->PCR[UART_RX_PIN] &= ~PORT_PCR_MUX_MASK;
+	PORTE->PCR[UART_RX_PIN] |= PORT_PCR_MUX(4);
+	// PORTE->PCR[22] &= ~PORT_PCR_MUX_MASK;
+	// PORTE->PCR[22] |= PORT_PCR_MUX(4);
+	UART2->C2 &= ~(UART_C2_TE_MASK | UART_C2_RE_MASK | UART_C2_RIE_MASK);
 
-    uint32_t bus_clock = (DEFAULT_SYSTEM_CLOCK) / 2;
-    uint32_t divisor = bus_clock / (BAUD_RATE * 16);
-    UART2->BDH = UART_BDH_SBR(divisor >> 8);
-    UART2->BDL = UART_BDL_SBR(divisor);
-    UART2->C1 = 0;
-    UART2->S2 = 0;
-    UART2->C3 = 0;
-    UART2->C2 |= (UART_C2_RE_MASK | UART_C2_RIE_MASK);
-    NVIC_SetPriority(UART2_IRQn, 128);
-    NVIC_ClearPendingIRQ(UART2_IRQn);
-    NVIC_EnableIRQ(UART2_IRQn);
+	uint32_t bus_clock = (DEFAULT_SYSTEM_CLOCK) / 2;
+	uint32_t divisor = bus_clock / (BAUD_RATE * 16);
+	UART2->BDH = UART_BDH_SBR(divisor >> 8);
+	UART2->BDL = UART_BDL_SBR(divisor);
+	UART2->C1 = 0;
+	UART2->S2 = 0;
+	UART2->C3 = 0;
+	UART2->C2 |= (UART_C2_RE_MASK | UART_C2_RIE_MASK);
+	NVIC_SetPriority(UART2_IRQn, 128);
+	NVIC_ClearPendingIRQ(UART2_IRQn);
+	NVIC_EnableIRQ(UART2_IRQn);
 }
-	
+
+volatile int counter = 0;
 void UART2_IRQHandler()
 {
-    NVIC_ClearPendingIRQ(UART2_IRQn);
-    uartData = UART2->D;
-    osSemaphoreRelease(brainSem);
-    // UART2->D = uartData;
+	NVIC_ClearPendingIRQ(UART2_IRQn);
+	uartData = UART2->D;
+	osSemaphoreRelease(brainSem);
+	// UART2->D = uartData;
+	counter++;
 }
 
 void initBuzzerPWM(void)
@@ -163,7 +165,6 @@ void initMotorPWM(void)
 	TPM0_C0V = 0;
 	TPM0_C1V = 0;
 }
-
 
 void change_frequency(int frequency)
 {
@@ -298,8 +299,8 @@ int main(void)
 	osThreadNew(red_blinky_main, NULL, NULL);
 	osThreadNew(green_blinky_main, NULL, NULL);
 	osThreadNew(buzz_main, NULL, NULL);
-	osThreadNew(brain_main, NULL, &priorityHigh);
-	osThreadNew(motor_main, NULL, &priorityHigh);
+	osThreadNew(brain_main, NULL, NULL);
+	osThreadNew(motor_main, NULL, NULL);
 	osKernelStart(); // Start thread execution
 	for (;;)
 	{
