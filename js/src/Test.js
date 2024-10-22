@@ -1,23 +1,20 @@
 import { useState } from "react";
 import { Joystick } from "react-joystick-component";
+import "./joystick.css"
 
 // Function to convert joystick positions to wheel speeds
 function joystickToWheelSpeeds(x, y) {
-  // Normalize the speeds to ensure they are within the maximum possible range
-  const angle = Math.atan2(y, x) % (Math.PI / 2);
-  var maxSpeed = Math.sqrt(2) * Math.sin(angle + Math.PI / 4);
-
-  // Reverse x direction if moving backward
-  if (y < 0) {
-    x = -x;
-    maxSpeed = 2 + maxSpeed;
-  }
-
-  // Calculate the wheel speeds
+  
   let leftWheelSpeed = y + x;
   let rightWheelSpeed = y - x;
 
+  const angle = Math.atan2(y, x) / Math.PI * 180;
+  console.log(angle)
+  
   // Avoid division by zero in normalization
+  // const angle = Math.atan2(y, x) % (Math.PI / 2);
+  // var maxSpeed = Math.sqrt(2) * Math.sin(angle + Math.PI / 4);
+  const maxSpeed = Math.max(Math.abs(leftWheelSpeed), Math.abs(rightWheelSpeed), 1);
   if (maxSpeed !== 0) {
     leftWheelSpeed /= maxSpeed;
     rightWheelSpeed /= maxSpeed;
@@ -44,6 +41,8 @@ function combine4BitValues(left4Bit, right4Bit) {
 export function Test() {
   const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
   const [binarySpeed, setBinarySpeed] = useState(119);
+  const [leftWheelSpeed, setLeftWheelSpeed] = useState(0);
+  const [rightWheelSpeed, setRightWheelSpeed] = useState(0);
   const [currTime, setCurrTime] = useState(Date.now());
 
   function callReq() {
@@ -65,11 +64,13 @@ export function Test() {
       stick.x,
       stick.y
     );
-
+    
     // Convert wheel speeds to 4-bit values
     const leftWheel4Bit = mapSpeedTo4Bit(leftWheelSpeed);
     const rightWheel4Bit = mapSpeedTo4Bit(rightWheelSpeed);
     const combined8BitValue = combine4BitValues(leftWheel4Bit, rightWheel4Bit);
+    setLeftWheelSpeed(((combined8BitValue >> 4) - 7) / 8.0);
+    setRightWheelSpeed(((combined8BitValue & 0b00001111) - 7) / 8.0);
 
     //const binaryValue = combined8BitValue.toString(2).padStart(8, "0");
     setBinarySpeed(combined8BitValue);
@@ -83,13 +84,17 @@ export function Test() {
   const handleStop = () => {
     setJoystickPos({ x: 0, y: 0 });
     setBinarySpeed("01110111");
+    setLeftWheelSpeed(0);
+    setRightWheelSpeed(0);
     callStop();
   };
 
   return (
-    <div>
-      <Joystick pos={joystickPos} move={handleMove} stop={handleStop} />
+    <div id="elem-to-center">
+      <Joystick pos={joystickPos} move={handleMove} stop={handleStop} stickSize={100} size={300}/>
       <p>Binary Speed: {binarySpeed}</p>
+      <p>Left Speed: {leftWheelSpeed}</p>
+      <p>Right Speed: {rightWheelSpeed}</p>
     </div>
   );
 }
