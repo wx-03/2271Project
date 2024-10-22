@@ -103,10 +103,11 @@ volatile int counter = 0;
 void UART2_IRQHandler()
 {
 	NVIC_ClearPendingIRQ(UART2_IRQn);
-	uartData = UART2->D;
+	if (UART2_S1 & UART_S1_RDRF_MASK) {
+		uartData = UART2->D;
+	}
 	osSemaphoreRelease(brainSem);
 	// UART2->D = uartData;
-	counter++;
 }
 
 void initBuzzerPWM(void)
