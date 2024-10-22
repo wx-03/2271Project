@@ -5,11 +5,19 @@ import "./joystick.css"
 // Function to convert joystick positions to wheel speeds
 function joystickToWheelSpeeds(x, y) {
   
-  let leftWheelSpeed = y + x;
-  let rightWheelSpeed = y - x;
+  var leftWheelSpeed = y + x;
+  var rightWheelSpeed = y - x;
 
   const angle = Math.atan2(y, x) / Math.PI * 180;
   console.log(angle)
+  if (angle < 0) {
+    if (angle <= -30 && angle >= -150) {
+      leftWheelSpeed = rightWheelSpeed = y;
+    } else {
+      leftWheelSpeed = x;
+      rightWheelSpeed = -x;
+    }
+  }
   
   // Avoid division by zero in normalization
   // const angle = Math.atan2(y, x) % (Math.PI / 2);
@@ -25,18 +33,6 @@ function joystickToWheelSpeeds(x, y) {
     rightWheelSpeed: rightWheelSpeed,
   };
 }
-
-// Function to map wheel speed to a 4-bit value (0-15)
-function mapSpeedTo4Bit(speed) {
-  return Math.round((speed + 1) * 7.5);
-}
-
-// Function to combine two 4-bit values into a single 8-bit value
-function combine4BitValues(left4Bit, right4Bit) {
-  return (left4Bit << 4) | right4Bit;
-}
-
-
 
 export function Test() {
   const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
@@ -66,9 +62,9 @@ export function Test() {
     );
     
     // Convert wheel speeds to 4-bit values
-    const leftWheel4Bit = mapSpeedTo4Bit(leftWheelSpeed);
-    const rightWheel4Bit = mapSpeedTo4Bit(rightWheelSpeed);
-    const combined8BitValue = combine4BitValues(leftWheel4Bit, rightWheel4Bit);
+    const left4Bit = Math.round((leftWheelSpeed + 1) * 7.5);
+    const right4Bit = Math.round((rightWheelSpeed + 1) * 7.5);
+    const combined8BitValue = (left4Bit << 4) | right4Bit;
     setLeftWheelSpeed(((combined8BitValue >> 4) - 7) / 8.0);
     setRightWheelSpeed(((combined8BitValue & 0b00001111) - 7) / 8.0);
 
@@ -78,12 +74,11 @@ export function Test() {
       setCurrTime(Date.now());
       callReq();
     } 
-    console.log("Combined 8-bit Value (Binary):", combined8BitValue);
   };
 
   const handleStop = () => {
     setJoystickPos({ x: 0, y: 0 });
-    setBinarySpeed("01110111");
+    setBinarySpeed(119);
     setLeftWheelSpeed(0);
     setRightWheelSpeed(0);
     callStop();
@@ -93,8 +88,8 @@ export function Test() {
     <div id="elem-to-center">
       <Joystick pos={joystickPos} move={handleMove} stop={handleStop} stickSize={100} size={300}/>
       <p>Binary Speed: {binarySpeed}</p>
-      <p>Left Speed: {leftWheelSpeed}</p>
-      <p>Right Speed: {rightWheelSpeed}</p>
+      <p>Left Speed in KL25: {leftWheelSpeed}</p>
+      <p>Right Speed in KL25: {rightWheelSpeed}</p>
     </div>
   );
 }
