@@ -274,13 +274,13 @@ void motor_main(void *argument)
 		}
 		if (rightDc > 0)
 		{
-			TPM0_C0V = TIMER_THRESHOLD * leftDc;
+			TPM0_C0V = TIMER_THRESHOLD * rightDc;
 			TPM0_C1V = 0;
 		}
 		else
 		{
 			TPM0_C0V = 0;
-			TPM0_C1V = TIMER_THRESHOLD * -leftDc;
+			TPM0_C1V = TIMER_THRESHOLD * -rightDc;
 		}
 	}
 }
