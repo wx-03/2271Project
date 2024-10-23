@@ -103,7 +103,8 @@ volatile int counter = 0;
 void UART2_IRQHandler()
 {
 	NVIC_ClearPendingIRQ(UART2_IRQn);
-	if (UART2_S1 & UART_S1_RDRF_MASK) {
+	if (UART2_S1 & UART_S1_RDRF_MASK)
+	{
 		uartData = UART2->D;
 	}
 	osSemaphoreRelease(brainSem);
@@ -242,16 +243,23 @@ void brain_main(void *argument)
 {
 	for (;;)
 	{
+		isMoving = 1;
 		osSemaphoreAcquire(brainSem, osWaitForever);
-		leftDc = ((uartData / 16) - 7) / 8.0;
-		rightDc = ((uartData & 0b00001111) - 7) / 8.0;
-		if (uartData == 0b01110111)
+		if (uartData == 0b00000000)
 		{
+			leftDc = 0;
+			rightDc = 0;
 			isMoving = 0;
+		}
+		else if (uartData == 0b00000001)
+		{
+			leftDc = -0.5;
+			rightDc = -0.5;
 		}
 		else
 		{
-			isMoving = 1;
+			leftDc = ((uartData >> 4)) / 15.0;
+			rightDc = ((uartData & 0b00001111)) / 15.0;
 		}
 		osSemaphoreRelease(motorSem);
 	}

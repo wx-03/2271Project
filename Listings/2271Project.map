@@ -12,7 +12,7 @@ Section Cross References
     main.o(i.brain_main) refers to ddiv.o(.text) for __aeabi_ddiv
     main.o(i.brain_main) refers to d2f.o(.text) for __aeabi_d2f
     main.o(i.brain_main) refers to rtx_semaphore.o(.text.osSemaphoreRelease) for osSemaphoreRelease
-    main.o(i.brain_main) refers to main.o(.data) for brainSem
+    main.o(i.brain_main) refers to main.o(.data) for isMoving
     main.o(i.buzz_main) refers to main.o(i.change_frequency) for change_frequency
     main.o(i.buzz_main) refers to rtx_delay.o(.text.osDelay) for osDelay
     main.o(i.change_frequency) refers to idiv.o(.text) for __aeabi_idivmod
@@ -1303,27 +1303,27 @@ Image Symbol Table
     i.__scatterload_null                     0x00001fbe   Section        2  handlers.o(i.__scatterload_null)
     i.__scatterload_zeroinit                 0x00001fc0   Section       14  handlers.o(i.__scatterload_zeroinit)
     i.brain_main                             0x00001fd0   Section        0  main.o(i.brain_main)
-    i.buzz_main                              0x00002068   Section        0  main.o(i.buzz_main)
-    i.change_frequency                       0x0000208c   Section        0  main.o(i.change_frequency)
-    i.green_blinky_main                      0x000020b4   Section        0  main.o(i.green_blinky_main)
-    i.initBuzzerPWM                          0x00002154   Section        0  main.o(i.initBuzzerPWM)
-    i.initLedGpio                            0x000021f8   Section        0  main.o(i.initLedGpio)
-    i.initMotorPWM                           0x00002334   Section        0  main.o(i.initMotorPWM)
-    i.initUART2                              0x00002498   Section        0  main.o(i.initUART2)
-    i.main                                   0x00002548   Section        0  main.o(i.main)
-    i.motor_main                             0x000025d4   Section        0  main.o(i.motor_main)
-    i.osRtxErrorNotify                       0x00002694   Section        0  rtx_config.o(i.osRtxErrorNotify)
-    i.osRtxIdleThread                        0x000026b4   Section        0  rtx_config.o(i.osRtxIdleThread)
-    i.red_blinky_main                        0x000026b8   Section        0  main.o(i.red_blinky_main)
-    .constdata                               0x000026ec   Section      100  rtx_lib.o(.constdata)
-    os_idle_thread_attr                      0x000026ec   Data          36  rtx_lib.o(.constdata)
-    os_timer_thread_attr                     0x00002710   Data          36  rtx_lib.o(.constdata)
-    os_timer_mq_attr                         0x00002734   Data          24  rtx_lib.o(.constdata)
-    .rodata                                  0x00002750   Section      160  rtx_lib.o(.rodata)
-    __tagsym$$used                           0x00002750   Number         0  rtx_lib.o(.rodata)
-    __tagsym$$used                           0x000027b8   Number         0  rtx_lib.o(.rodata)
-    [Anonymous Symbol]                       0x000027f0   Section        0  rtx_kernel.o(.rodata.str1.4)
-    .L.str                                   0x000027f0   Data          11  rtx_kernel.o(.rodata.str1.4)
+    i.buzz_main                              0x00002074   Section        0  main.o(i.buzz_main)
+    i.change_frequency                       0x00002098   Section        0  main.o(i.change_frequency)
+    i.green_blinky_main                      0x000020c0   Section        0  main.o(i.green_blinky_main)
+    i.initBuzzerPWM                          0x00002160   Section        0  main.o(i.initBuzzerPWM)
+    i.initLedGpio                            0x00002204   Section        0  main.o(i.initLedGpio)
+    i.initMotorPWM                           0x00002340   Section        0  main.o(i.initMotorPWM)
+    i.initUART2                              0x000024a4   Section        0  main.o(i.initUART2)
+    i.main                                   0x00002554   Section        0  main.o(i.main)
+    i.motor_main                             0x000025e0   Section        0  main.o(i.motor_main)
+    i.osRtxErrorNotify                       0x000026a0   Section        0  rtx_config.o(i.osRtxErrorNotify)
+    i.osRtxIdleThread                        0x000026c0   Section        0  rtx_config.o(i.osRtxIdleThread)
+    i.red_blinky_main                        0x000026c4   Section        0  main.o(i.red_blinky_main)
+    .constdata                               0x000026f8   Section      100  rtx_lib.o(.constdata)
+    os_idle_thread_attr                      0x000026f8   Data          36  rtx_lib.o(.constdata)
+    os_timer_thread_attr                     0x0000271c   Data          36  rtx_lib.o(.constdata)
+    os_timer_mq_attr                         0x00002740   Data          24  rtx_lib.o(.constdata)
+    .rodata                                  0x0000275c   Section      160  rtx_lib.o(.rodata)
+    __tagsym$$used                           0x0000275c   Number         0  rtx_lib.o(.rodata)
+    __tagsym$$used                           0x000027c4   Number         0  rtx_lib.o(.rodata)
+    [Anonymous Symbol]                       0x000027fc   Section        0  rtx_kernel.o(.rodata.str1.4)
+    .L.str                                   0x000027fc   Data          11  rtx_kernel.o(.rodata.str1.4)
     .bss.os                                  0x1ffff000   Section     4160  rtx_lib.o(.bss.os)
     os_mem                                   0x1ffff000   Data        4096  rtx_lib.o(.bss.os)
     os_isr_queue                             0x20000000   Data          64  rtx_lib.o(.bss.os)
@@ -1493,24 +1493,24 @@ Image Symbol Table
     __scatterload_copy                       0x00001fb1   Thumb Code    14  handlers.o(i.__scatterload_copy)
     __scatterload_null                       0x00001fbf   Thumb Code     2  handlers.o(i.__scatterload_null)
     __scatterload_zeroinit                   0x00001fc1   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    brain_main                               0x00001fd1   Thumb Code   122  main.o(i.brain_main)
-    buzz_main                                0x00002069   Thumb Code    36  main.o(i.buzz_main)
-    change_frequency                         0x0000208d   Thumb Code    32  main.o(i.change_frequency)
-    green_blinky_main                        0x000020b5   Thumb Code   146  main.o(i.green_blinky_main)
-    initBuzzerPWM                            0x00002155   Thumb Code   142  main.o(i.initBuzzerPWM)
-    initLedGpio                              0x000021f9   Thumb Code   296  main.o(i.initLedGpio)
-    initMotorPWM                             0x00002335   Thumb Code   330  main.o(i.initMotorPWM)
-    initUART2                                0x00002499   Thumb Code   156  main.o(i.initUART2)
-    main                                     0x00002549   Thumb Code   110  main.o(i.main)
-    motor_main                               0x000025d5   Thumb Code   168  main.o(i.motor_main)
-    osRtxErrorNotify                         0x00002695   Thumb Code    32  rtx_config.o(i.osRtxErrorNotify)
-    osRtxIdleThread                          0x000026b5   Thumb Code     4  rtx_config.o(i.osRtxIdleThread)
-    red_blinky_main                          0x000026b9   Thumb Code    42  main.o(i.red_blinky_main)
-    osRtxUserSVC                             0x0000274c   Data           4  rtx_lib.o(.constdata)
-    osRtxConfig                              0x00002750   Data         104  rtx_lib.o(.rodata)
-    os_cb_sections                           0x000027b8   Data          56  rtx_lib.o(.rodata)
-    Region$$Table$$Base                      0x000027fc   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x0000281c   Number         0  anon$$obj.o(Region$$Table)
+    brain_main                               0x00001fd1   Thumb Code   134  main.o(i.brain_main)
+    buzz_main                                0x00002075   Thumb Code    36  main.o(i.buzz_main)
+    change_frequency                         0x00002099   Thumb Code    32  main.o(i.change_frequency)
+    green_blinky_main                        0x000020c1   Thumb Code   146  main.o(i.green_blinky_main)
+    initBuzzerPWM                            0x00002161   Thumb Code   142  main.o(i.initBuzzerPWM)
+    initLedGpio                              0x00002205   Thumb Code   296  main.o(i.initLedGpio)
+    initMotorPWM                             0x00002341   Thumb Code   330  main.o(i.initMotorPWM)
+    initUART2                                0x000024a5   Thumb Code   156  main.o(i.initUART2)
+    main                                     0x00002555   Thumb Code   110  main.o(i.main)
+    motor_main                               0x000025e1   Thumb Code   168  main.o(i.motor_main)
+    osRtxErrorNotify                         0x000026a1   Thumb Code    32  rtx_config.o(i.osRtxErrorNotify)
+    osRtxIdleThread                          0x000026c1   Thumb Code     4  rtx_config.o(i.osRtxIdleThread)
+    red_blinky_main                          0x000026c5   Thumb Code    42  main.o(i.red_blinky_main)
+    osRtxUserSVC                             0x00002758   Data           4  rtx_lib.o(.constdata)
+    osRtxConfig                              0x0000275c   Data         104  rtx_lib.o(.rodata)
+    os_cb_sections                           0x000027c4   Data          56  rtx_lib.o(.rodata)
+    Region$$Table$$Base                      0x00002808   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x00002828   Number         0  anon$$obj.o(Region$$Table)
     .bss.os.msgqueue.cb$$Base                0x20000040   Number         0  rtx_lib.o(.bss.os.msgqueue.cb)
     .bss.os.msgqueue.cb$$Limit               0x20000074   Number         0  rtx_lib.o(.bss.os.msgqueue.cb)
     .bss.os.thread.cb$$Base                  0x200000c4   Number         0  rtx_lib.o(.bss.os.thread.cb)
@@ -1537,9 +1537,9 @@ Memory Map of the image
 
   Image Entry point : 0x000000d5
 
-  Load Region LR_1 (Base: 0x00000000, Size: 0x00003c44, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00002860])
+  Load Region LR_1 (Base: 0x00000000, Size: 0x00003c50, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x0000286c])
 
-    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x0000281c, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x00002828, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1656,27 +1656,27 @@ Memory Map of the image
     0x00001fbe   0x00001fbe   0x00000002   Code   RO          832    i.__scatterload_null  mc_p.l(handlers.o)
     0x00001fc0   0x00001fc0   0x0000000e   Code   RO          833    i.__scatterload_zeroinit  mc_p.l(handlers.o)
     0x00001fce   0x00001fce   0x00000002   PAD
-    0x00001fd0   0x00001fd0   0x00000098   Code   RO            6    i.brain_main        main.o
-    0x00002068   0x00002068   0x00000024   Code   RO            7    i.buzz_main         main.o
-    0x0000208c   0x0000208c   0x00000028   Code   RO            8    i.change_frequency  main.o
-    0x000020b4   0x000020b4   0x000000a0   Code   RO           10    i.green_blinky_main  main.o
-    0x00002154   0x00002154   0x000000a4   Code   RO           11    i.initBuzzerPWM     main.o
-    0x000021f8   0x000021f8   0x0000013c   Code   RO           12    i.initLedGpio       main.o
-    0x00002334   0x00002334   0x00000164   Code   RO           13    i.initMotorPWM      main.o
-    0x00002498   0x00002498   0x000000b0   Code   RO           14    i.initUART2         main.o
-    0x00002548   0x00002548   0x0000008c   Code   RO           15    i.main              main.o
-    0x000025d4   0x000025d4   0x000000c0   Code   RO           16    i.motor_main        main.o
-    0x00002694   0x00002694   0x00000020   Code   RO          202    i.osRtxErrorNotify  rtx_config.o
-    0x000026b4   0x000026b4   0x00000004   Code   RO          203    i.osRtxIdleThread   rtx_config.o
-    0x000026b8   0x000026b8   0x00000034   Code   RO           17    i.red_blinky_main   main.o
-    0x000026ec   0x000026ec   0x00000064   Data   RO          172    .constdata          rtx_lib.o
-    0x00002750   0x00002750   0x000000a0   Data   RO          174    .rodata             rtx_lib.o
-    0x000027f0   0x000027f0   0x0000000b   Data   RO          329    .rodata.str1.4      RTX_CM0.lib(rtx_kernel.o)
-    0x000027fb   0x000027fb   0x00000001   PAD
-    0x000027fc   0x000027fc   0x00000020   Data   RO          829    Region$$Table       anon$$obj.o
+    0x00001fd0   0x00001fd0   0x000000a4   Code   RO            6    i.brain_main        main.o
+    0x00002074   0x00002074   0x00000024   Code   RO            7    i.buzz_main         main.o
+    0x00002098   0x00002098   0x00000028   Code   RO            8    i.change_frequency  main.o
+    0x000020c0   0x000020c0   0x000000a0   Code   RO           10    i.green_blinky_main  main.o
+    0x00002160   0x00002160   0x000000a4   Code   RO           11    i.initBuzzerPWM     main.o
+    0x00002204   0x00002204   0x0000013c   Code   RO           12    i.initLedGpio       main.o
+    0x00002340   0x00002340   0x00000164   Code   RO           13    i.initMotorPWM      main.o
+    0x000024a4   0x000024a4   0x000000b0   Code   RO           14    i.initUART2         main.o
+    0x00002554   0x00002554   0x0000008c   Code   RO           15    i.main              main.o
+    0x000025e0   0x000025e0   0x000000c0   Code   RO           16    i.motor_main        main.o
+    0x000026a0   0x000026a0   0x00000020   Code   RO          202    i.osRtxErrorNotify  rtx_config.o
+    0x000026c0   0x000026c0   0x00000004   Code   RO          203    i.osRtxIdleThread   rtx_config.o
+    0x000026c4   0x000026c4   0x00000034   Code   RO           17    i.red_blinky_main   main.o
+    0x000026f8   0x000026f8   0x00000064   Data   RO          172    .constdata          rtx_lib.o
+    0x0000275c   0x0000275c   0x000000a0   Data   RO          174    .rodata             rtx_lib.o
+    0x000027fc   0x000027fc   0x0000000b   Data   RO          329    .rodata.str1.4      RTX_CM0.lib(rtx_kernel.o)
+    0x00002807   0x00002807   0x00000001   PAD
+    0x00002808   0x00002808   0x00000020   Data   RO          829    Region$$Table       anon$$obj.o
 
 
-    Execution Region ER_RW (Exec base: 0x1ffff000, Load base: 0x0000281c, Size: 0x00001428, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00000044])
+    Execution Region ER_RW (Exec base: 0x1ffff000, Load base: 0x00002828, Size: 0x00001428, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00000044])
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1691,12 +1691,12 @@ Memory Map of the image
     0x20000384   COMPRESSED   0x000000a4   Data   RW          330    .data.os            RTX_CM0.lib(rtx_kernel.o)
 
 
-    Execution Region ER_ZI (Exec base: 0x20000428, Load base: 0x00002860, Size: 0x00000108, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x20000428, Load base: 0x0000286c, Size: 0x00000108, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x20000428        -       0x00000001   Zero   RW          711    .bss.PendST         RTX_CM0.lib(os_systick.o)
-    0x20000429   0x00002860   0x00000007   PAD
+    0x20000429   0x0000286c   0x00000007   PAD
     0x20000430        -       0x00000100   Zero   RW          232    STACK               startup_mkl25z4.o
 
 
@@ -1707,14 +1707,14 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1980        234          0         48          0     235942   main.o
+      1992        234          0         48          0     235922   main.o
         64          8          0          0          0       1025   rtx_config.o
          0          0        260       4940          0       9178   rtx_lib.o
         52         28        192          0        256        848   startup_mkl25z4.o
        712         84          0          4          0       1631   system_mkl25z4.o
 
     ----------------------------------------------------------------------
-      2810        354        484       4996        256     248624   Object Totals
+      2822        354        484       4996        256     248604   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          2          0          0          4          0          0   (incl. Padding)
 
@@ -1783,15 +1783,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      9772        676        496       5160        264     370182   Grand Totals
-      9772        676        496         68        264     370182   ELF Image Totals (compressed)
-      9772        676        496         68          0          0   ROM Totals
+      9784        676        496       5160        264     370162   Grand Totals
+      9784        676        496         68        264     370162   ELF Image Totals (compressed)
+      9784        676        496         68          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                10268 (  10.03kB)
+    Total RO  Size (Code + RO Data)                10280 (  10.04kB)
     Total RW  Size (RW Data + ZI Data)              5424 (   5.30kB)
-    Total ROM Size (Code + RO Data + RW Data)      10336 (  10.09kB)
+    Total ROM Size (Code + RO Data + RW Data)      10348 (  10.11kB)
 
 ==============================================================================
 
