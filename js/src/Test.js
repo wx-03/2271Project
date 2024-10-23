@@ -50,7 +50,7 @@ export function Test() {
   function callStop() {
     var request = new XMLHttpRequest();
     request.open('POST', 'http://192.168.114.249/data');
-    request.send(JSON.stringify({data : "01110111"}))
+    request.send(JSON.stringify({data : 119}))
   }
 
   const handleMove = (stick) => {
@@ -70,7 +70,7 @@ export function Test() {
 
     //const binaryValue = combined8BitValue.toString(2).padStart(8, "0");
     setBinarySpeed(combined8BitValue);
-    if (Date.now() - currTime > 1000) {
+    if (Date.now() - currTime > 100) {
       setCurrTime(Date.now());
       callReq();
     } 
