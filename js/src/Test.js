@@ -5,52 +5,47 @@ import { JoystickShape } from "react-joystick-component";
 
 // Function to convert joystick positions to wheel speeds
 function joystickToWheelSpeeds(x, y) {
-  // Angle in degrees
-  var angle = (Math.atan2(y, x) * 180) / Math.PI;
-  // var maxSpeed = Math.sqrt(2) * Math.sin(angle + Math.PI / 4);
   var leftSpeed = 0.0;
   var rightSpeed = 0.0;
-  if (angle > 0 && angle <= 90) {
-    leftSpeed = 15
-    rightSpeed = Math.floor((angle / 90) * 8) + 7;
-  } else if (angle > 90 && angle < 180) {
-    rightSpeed = 15;
-    angle -= 90;
-    leftSpeed = 8 - Math.floor((angle / 90) * 8) + 7;
-    if (leftSpeed === 0 && rightSpeed === 1) {
-      //forgo this small movement for move backwards
+  if (y === 0) {
+    if (x >= 0) { // turn right on the spot
+      leftSpeed = x * 15.0;
       rightSpeed = 0;
+    } else { // turn left on the spot
+      leftSpeed = 0;
+      rightSpeed = -x * 15.0;
     }
-  } else if (angle <= 0 & angle > -20) { //extra for turn on spot
-    leftSpeed = 15;
-    rightSpeed = 0;
-  } else if (angle >= -180 && angle < -160) { //extra for turn on spot
-    leftSpeed = 0;
-    rightSpeed = 15;
-  } else {
-    //backward binary
-    leftSpeed = 0;
-    rightSpeed = 1;
   }
-
-  //00000000 will be for stop
-
-  var ratioToMax = Math.sqrt(x * x + y * y); //magnitude
-  ratioToMax += 0.01; //prevents jittering at the edges of joystick
-  if (angle > 0 && angle < 180) {
-    rightSpeed *= ratioToMax;
-    leftSpeed *= ratioToMax;
+  else if (x === 0) {
+    if (y >= 0) {
+      leftSpeed = y * 15.0;
+      rightSpeed = y * 15.0;
+    } else { // backward binary
+      leftSpeed = 0;
+      rightSpeed = 1;
+    }
   }
+  else {
+    var angle = (Math.atan2(y, x) * 180) / Math.PI; // Angle in degrees
+    if (angle > -20 && angle <= 90) {
+      leftSpeed = 15;
+      angle = Math.max(angle, 0);
+      rightSpeed = Math.floor((angle / 90) * 8) + 7;
+    } 
+    
+    else if ((angle > 90 && angle < 180) || (angle >= -180 && angle < -160)) {
+      rightSpeed = 15;
+      angle = Math.abs(angle) - 90;
+      leftSpeed = 8 - Math.floor((angle / 90) * 8) + 7;
+    } 
 
-  if (rightSpeed === 1 && leftSpeed === 0) {
-    rightSpeed = 2;
+    var ratioToMax = Math.max(Math.sqrt(x * x + y * y),1); //magnitude
+    ratioToMax += 0.01; //prevents jittering at the edges of joystick
+    if (angle > 0 && angle < 180) {
+      rightSpeed /= ratioToMax;
+      leftSpeed /= ratioToMax;
+    }
   }
-
-  if (angle < -20 && angle > -160) {
-    leftSpeed = 0;
-    rightSpeed = 1;
-  }
-
   return {
     leftWheelSpeed: leftSpeed,
     rightWheelSpeed: rightSpeed,
@@ -144,11 +139,13 @@ export function Test() {
 
   return (
     <div id="elem-to-center">
-      <Joystick controlPlaneShape={JoystickShape.AxisX} pos={{x: joystickPos.x, y:0}} move={handleXMove}  stickSize={100} size={300} />
-      <Joystick controlPlaneShape={JoystickShape.AxisY} pos={{x:0, y:joystickPos.y}} move={handleYMove} stickSize={100} size={300} />
+      <Joystick controlPlaneShape={JoystickShape.AxisX} pos={{x: joystickPos.x, y:0}} move={handleXMove} stop={handleXStop} stickSize={100} size={300} />
+      <Joystick controlPlaneShape={JoystickShape.AxisY} pos={{x:0, y:joystickPos.y}} move={handleYMove} stop={handleYStop} stickSize={100} size={300} />
       <p>Binary Speed: {binarySpeed}</p>
       <p>Left Speed in KL25: {leftWheelSpeed}</p>
       <p>Right Speed in KL25: {rightWheelSpeed}</p>
+      <p>x: {joystickPos.x}</p>
+      <p>y: {joystickPos.y}</p>
     </div>
   );
 }
