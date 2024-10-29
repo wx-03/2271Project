@@ -34,13 +34,13 @@ function joystickToWheelSpeeds(x, y) {
     if (angle > -20 && angle <= 90) {
       leftSpeed = 15;
       angle = Math.max(angle, 0);
-      rightSpeed = Math.floor((angle / 90) * 15); // 0 to 15
+      rightSpeed = Math.floor((angle / 90) * 7); // 0 to 7
     } 
     
     else if ((angle > 90 && angle < 180) || (angle >= -180 && angle < -160)) {
       rightSpeed = 15;
       angle = Math.abs(angle) - 90;
-      leftSpeed = 15 - Math.floor((angle / 90) * 15); // 15 to 0
+      leftSpeed = 7 - Math.floor((angle / 90) * 7); // 7 to 0
     }   
 
     var ratioToMax = Math.max(Math.sqrt(x * x + y * y),1); //magnitude
