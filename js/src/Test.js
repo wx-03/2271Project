@@ -3,10 +3,13 @@ import { Joystick } from "react-joystick-component";
 import { JoystickShape } from "react-joystick-component";
 //import "./joystick.css"
 
+
+
 // Function to convert joystick positions to wheel speeds
 function joystickToWheelSpeeds(x, y) {
   var leftSpeed = 0.0;
   var rightSpeed = 0.0;
+  // One joystick movement
   if (y === 0) {
     if (x >= 0) { // turn right on the spot
       leftSpeed = x * 15.0;
@@ -25,19 +28,20 @@ function joystickToWheelSpeeds(x, y) {
       rightSpeed = 1;
     }
   }
+  // Two joystick movement
   else {
     var angle = (Math.atan2(y, x) * 180) / Math.PI; // Angle in degrees
     if (angle > -20 && angle <= 90) {
       leftSpeed = 15;
       angle = Math.max(angle, 0);
-      rightSpeed = Math.floor((angle / 90) * 8) + 7;
+      rightSpeed = Math.floor((angle / 90) * 15); // 0 to 15
     } 
     
     else if ((angle > 90 && angle < 180) || (angle >= -180 && angle < -160)) {
       rightSpeed = 15;
       angle = Math.abs(angle) - 90;
-      leftSpeed = 8 - Math.floor((angle / 90) * 8) + 7;
-    } 
+      leftSpeed = 15 - Math.floor((angle / 90) * 15); // 15 to 0
+    }   
 
     var ratioToMax = Math.max(Math.sqrt(x * x + y * y),1); //magnitude
     ratioToMax += 0.01; //prevents jittering at the edges of joystick
@@ -59,6 +63,13 @@ export function Test() {
   const [rightWheelSpeed, setRightWheelSpeed] = useState(0);
   const [currTime, setCurrTime] = useState(Date.now());
 
+  function setSpeed(leftWheelSpeed, rightWheelSpeed) {
+    let combined8BitValue = (leftWheelSpeed << 4) | rightWheelSpeed;
+    setLeftWheelSpeed((combined8BitValue >> 4) / 15.0);
+    setRightWheelSpeed((combined8BitValue & 0b00001111) / 15.0);
+    setBinarySpeed(combined8BitValue);
+  }
+
   function callReq() {
     var request = new XMLHttpRequest();
     request.open('POST', 'http://192.168.114.249/data');
@@ -73,18 +84,11 @@ export function Test() {
 
   const handleYMove = (stick) => {
     setJoystickPos({ x: joystickPos.x, y: stick.y });
-
     const { leftWheelSpeed, rightWheelSpeed } = joystickToWheelSpeeds(
       -joystickPos.y,
       joystickPos.x
     );
-
-    const combined8BitValue = (leftWheelSpeed << 4) | rightWheelSpeed;
-    setLeftWheelSpeed((combined8BitValue >> 4) / 15.0);
-    //setLeftWheelSpeed(leftWheelSpeed);
-    setRightWheelSpeed((combined8BitValue & 0b00001111) / 15.0);
-    //setRightWheelSpeed(rightWheelSpeed);
-    setBinarySpeed(combined8BitValue);
+    setSpeed(leftWheelSpeed, rightWheelSpeed);
     if (Date.now() - currTime > 100) {
       setCurrTime(Date.now());
       callReq();
@@ -93,18 +97,11 @@ export function Test() {
 
   const handleXMove = (stick) => {
     setJoystickPos({ x: stick.x, y: joystickPos.y });
-
     const { leftWheelSpeed, rightWheelSpeed } = joystickToWheelSpeeds(
       -joystickPos.y,
       joystickPos.x
     );
-
-    const combined8BitValue = (leftWheelSpeed << 4) | rightWheelSpeed;
-    setLeftWheelSpeed((combined8BitValue >> 4) / 15.0);
-    //setLeftWheelSpeed(leftWheelSpeed);
-    setRightWheelSpeed((combined8BitValue & 0b00001111) / 15.0);
-    //setRightWheelSpeed(rightWheelSpeed);
-    setBinarySpeed(combined8BitValue);
+    setSpeed(leftWheelSpeed, rightWheelSpeed);
     if (Date.now() - currTime > 100) {
       setCurrTime(Date.now());
       callReq();
@@ -117,10 +114,7 @@ export function Test() {
       -joystickPos.y,
       0
     );
-    const combined8BitValue = (leftWheelSpeed << 4) | rightWheelSpeed;
-    setLeftWheelSpeed((combined8BitValue >> 4) / 15.0);
-    setRightWheelSpeed((combined8BitValue & 0b00001111) / 15.0);
-    setBinarySpeed(combined8BitValue);
+    setSpeed(leftWheelSpeed, rightWheelSpeed);
     callStop();
   };
 
@@ -130,10 +124,7 @@ export function Test() {
       0,
       joystickPos.x
     );
-    const combined8BitValue = (leftWheelSpeed << 4) | rightWheelSpeed;
-    setLeftWheelSpeed((combined8BitValue >> 4) / 15.0);
-    setRightWheelSpeed((combined8BitValue & 0b00001111) / 15.0);
-    setBinarySpeed(combined8BitValue);
+    setSpeed(leftWheelSpeed, rightWheelSpeed);
     callStop();
   };
 
