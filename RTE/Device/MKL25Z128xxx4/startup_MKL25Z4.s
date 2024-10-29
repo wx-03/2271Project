@@ -269,7 +269,7 @@ Reset_Handler   PROC
 
 
 CPSIDI               ; Mask interrupts
-                LDR     R0, =SystemInit
+				LDR     R0, =SystemInit
                 BLX     R0
                 CPSIE   i               ; Unmask interrupts
                 LDR     R0, =__main
