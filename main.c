@@ -3,21 +3,19 @@
 #include CMSIS_device_header
 #include "cmsis_os2.h"
 
-#include "led.h"
-#include "uart.h"
 #define RLED 29 // portE pin 29
 #define CLOCK_SETUP 1
 #define BUZZ 12
 
 
-const int c = 523;
-const int d = 587;
-const int e = 659;
-const int f = 698;
-const int g = 784;
-const int a = 880;
-const int b = 988;
-const int C = 1047;
+#define c 523
+#define d 587
+#define e 659
+#define f 698
+#define g 784
+#define a 880
+#define b 988
+#define C 1047
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 osSemaphoreId_t brainSem;
@@ -25,7 +23,7 @@ osSemaphoreId_t motorSem;
 volatile uint8_t uartData = 0x77;
 volatile float leftDc = 0.0;
 volatile float rightDc = 0.0;
-volatile uint8_t isMoving = 0;
+volatile static uint8_t isMoving;
 
 uint32_t frequencies_mod[] = {1000};
 
@@ -135,18 +133,19 @@ void UART2_IRQHandler()
 
 void initBuzzerPWM(void)
 {
-  PORTB->PCR[BUZZER_PIN] &= ~PORT_PCR_MUX_MASK;
-  PORTB->PCR[BUZZER_PIN] |= PORT_PCR_MUX(3);
+  SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
+  PORTA->PCR [BUZZ] &= ~PORT_PCR_MUX_MASK; 
+	PORTA->PCR [BUZZ] |= PORT_PCR_MUX (3);
   SIM->SCGC6 |= SIM_SCGC6_TPM1_MASK;
-  SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
+  SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK; 
   SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
-  TPM1->MOD = TIMER_THRESHOLD;
-  TPM1->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
-  TPM1->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
-  TPM1->SC &= ~(TPM_SC_CPWMS_MASK);
-  TPM1_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
-  TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
-  TPM1_C0V = TIMER_THRESHOLD / 2;
+  TPM1->MOD = 7499;
+  TPM1->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK)); 
+	TPM1->SC |= (TPM_SC_CMOD (1) | TPM_SC_PS (7));
+	TPM1->SC &= ~(TPM_SC_CPWMS_MASK);
+  TPM1_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK)); 
+	TPM1_C0SC |= (TPM_CnSC_ELSB (1) | TPM_CnSC_MSB (1));
+  TPM1_C0V = 7499/16;
 }
 
 void initMotorPWM(void)
@@ -215,55 +214,42 @@ void red_blinky_main(void *argument)
 
 void green_blinky_main(void *argument)
 {
-  for (;;)
-  {
-    if (isMoving)
-    {
-      // Running Mode
-      for (int i = 0; i < 10; i++)
-      {
-        if (0 <= i && i <= 3)
-        {
-          PTB->PTOR |= MASK(greenPins[i]);
-        }
-        else
-        {
-          PTE->PTOR |= MASK(greenPins[i]);
-        }
-        osDelay(250U);
-        if (0 <= i && i <= 3)
-        {
-          PTB->PTOR |= MASK(greenPins[i]);
-        }
-        else
-        {
-          PTE->PTOR |= MASK(greenPins[i]);
-        }
-      }
-    }
-    else
-    {
-      // Light up all
-      for (int i = 0; i < 10; i++)
-      {
-        if (0 <= i && i <= 3)
-        {
-          PTB->PSOR |= MASK(greenPins[i]);
-        }
-        else
-        {
-          PTE->PSOR |= MASK(greenPins[i]);
-        }
-      }
-    }
-  }
+	for (;;) {
+		if (isMoving)
+		{
+			// Running Mode
+			for (int i = 0; i < 10; i++) {
+				if (0 <= i && i <= 3) {
+					PTB->PTOR |= MASK(greenPins[i]);
+				} else {
+					PTE->PTOR |= MASK(greenPins[i]);
+				}
+				osDelay(250U);	
+				if (0 <= i && i <= 3) {
+					PTB->PTOR |= MASK(greenPins[i]);
+				} else {
+					PTE->PTOR |= MASK(greenPins[i]);
+				}
+			}	
+		}
+		else
+		{
+			// Light up all
+			for (int i = 0; i < 10; i++) {
+				if (0 <= i && i <= 3) {
+					PTB->PSOR |= MASK(greenPins[i]);
+				} else {
+					PTE->PSOR |= MASK(greenPins[i]);
+				}
+			}			
+		}
+	}
 }
 
 void buzz_main(void *argument)
 {
   int i = 0;
 
-  int major[] = {c, d, e, f, g, a, b, C};
   for (;;)
   {
     change_frequency(melody[i]);
@@ -278,13 +264,12 @@ void brain_main(void *argument)
 {
   for (;;)
   {
-    isMoving = 1;
+    
     osSemaphoreAcquire(brainSem, osWaitForever);
     if (uartData == 0b00000000)
     {
       leftDc = 0;
       rightDc = 0;
-      isMoving = 0;
     }
     else if (uartData == 0b00000001)
     {
@@ -296,6 +281,14 @@ void brain_main(void *argument)
       leftDc = ((uartData >> 4)) / 15.0;
       rightDc = ((uartData & 0b00001111)) / 15.0;
     }
+		if (leftDc <= 0.1 && rightDc <= 0.1)
+		{
+			isMoving = 0;
+		}
+		else
+		{
+			isMoving = 1;
+		}
     osSemaphoreRelease(motorSem);
   }
 }
@@ -335,9 +328,10 @@ int main(void)
   initLedGpio();
   initBuzzerPWM();
   initMotorPWM();
-
+	isMoving = 0;
   brainSem = osSemaphoreNew(1, 0, NULL);
   motorSem = osSemaphoreNew(1, 0, NULL);
+	
 
   osKernelInitialize(); // Initialize CMSIS-RTOS
   osThreadNew(red_blinky_main, NULL, NULL);
