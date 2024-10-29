@@ -227,6 +227,9 @@ void green_blinky_main(void *argument)
 			}
 			// Running Mode
 			for (int i = 0; i < 10; i++) {
+				if (!isMoving) {
+					break;
+				}
 				if (0 <= i && i <= 3) {
 					PTB->PTOR |= MASK(greenPins[i]);
 				} else {
