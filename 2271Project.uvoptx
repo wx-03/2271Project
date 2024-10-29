@@ -149,6 +149,7 @@
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
+<<<<<<< HEAD
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -178,6 +179,10 @@
       </WatchWindow1>
       <ScvdPack>
         <Filename>C:\Users\pingh\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\RTX\RTX5.scvd</Filename>
+=======
+      <ScvdPack>
+        <Filename>C:\Users\user\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\RTX\RTX5.scvd</Filename>
+>>>>>>> bd3bafd1a44c3f55a7d688fd8939e869d77ce30f
         <Type>ARM.CMSIS.5.6.0</Type>
         <SubType>1</SubType>
       </ScvdPack>
