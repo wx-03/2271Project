@@ -21,9 +21,10 @@ uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 osSemaphoreId_t brainSem;
 osSemaphoreId_t motorSem;
 volatile uint8_t uartData = 0x77;
-volatile float leftDc = 0.0;
-volatile float rightDc = 0.0;
-volatile static uint8_t isMoving;
+volatile static float leftDc = 0.0;
+volatile static float rightDc = 0.0;
+volatile static uint8_t isMoving = 0;
+volatile static int counter = 0;
 
 uint32_t frequencies_mod[] = {1000};
 
@@ -119,15 +120,14 @@ void initUART2(void)
   NVIC_EnableIRQ(UART2_IRQn);
 }
 
-volatile int counter = 0;
 void UART2_IRQHandler()
 {
   NVIC_ClearPendingIRQ(UART2_IRQn);
   if (UART2_S1 & UART_S1_RDRF_MASK)
   {
     uartData = UART2->D;
+		osSemaphoreRelease(brainSem);
   }
-  osSemaphoreRelease(brainSem);
   // UART2->D = uartData;
 }
 
@@ -264,7 +264,6 @@ void brain_main(void *argument)
 {
   for (;;)
   {
-    
     osSemaphoreAcquire(brainSem, osWaitForever);
     if (uartData == 0b00000000)
     {
@@ -281,7 +280,7 @@ void brain_main(void *argument)
       leftDc = ((uartData >> 4)) / 15.0;
       rightDc = ((uartData & 0b00001111)) / 15.0;
     }
-		if (leftDc <= 0.1 && rightDc <= 0.1)
+		if (leftDc == 0 && rightDc == 0)
 		{
 			isMoving = 0;
 		}
@@ -328,7 +327,6 @@ int main(void)
   initLedGpio();
   initBuzzerPWM();
   initMotorPWM();
-	isMoving = 0;
   brainSem = osSemaphoreNew(1, 0, NULL);
   motorSem = osSemaphoreNew(1, 0, NULL);
 	
