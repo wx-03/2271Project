@@ -1,0 +1,26 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 30px 0px; /* Gap between buttons and joystick*/
+    gap: 220px; /* Gap between buttons*/
+    padding: 30px 10px;
+  }
+
+button {
+    padding: 90px 20px; /* Length Height */
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+}
+  
+/* br {
+    content: "";
+    margin: 0em;
+    display: block;
+    font-size: 24%;
+} */
+
+.divUpright {
+    writing-mode: vertical-lr;
+}
