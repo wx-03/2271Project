@@ -25,6 +25,7 @@ volatile static float leftDc = 0.0;
 volatile static float rightDc = 0.0;
 volatile static uint8_t isMoving = 0;
 volatile static int counter = 0;
+volatile static uint8_t isDone = 0;
 
 uint32_t frequencies_mod[] = {1000};
 
@@ -217,6 +218,13 @@ void green_blinky_main(void *argument)
 	for (;;) {
 		if (isMoving)
 		{
+			for (int i = 0; i < 10; i++) {
+				if (0 <= i && i <= 3) {
+					PTB->PCOR |= MASK(greenPins[i]);
+				} else {
+					PTE->PCOR |= MASK(greenPins[i]);
+				}
+			}
 			// Running Mode
 			for (int i = 0; i < 10; i++) {
 				if (0 <= i && i <= 3) {
@@ -256,7 +264,12 @@ void buzz_main(void *argument)
     osDelay(noteDurations[i]);
     // change_frequency(0);
     // osDelay(5);
-    i = (i + 1) % (sizeof(melody) / sizeof(melody[0]));
+	int length = sizeof(melody) / sizeof(melody[0]);
+	if (isDone == 0) {
+		i = (i + 1) % length;
+	} else {
+		i = (i == 0) ? length - 1 : i - 1;
+	}
   }
 }
 
