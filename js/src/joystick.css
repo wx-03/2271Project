@@ -1,17 +1,18 @@
 .grid-container {
     display: grid;
-    grid-template-columns: 30px 0px; /* Gap between buttons and joystick*/
+    grid-template-columns: 90px 0px; /* Gap between buttons and joystick*/
     gap: 220px; /* Gap between buttons*/
     padding: 30px 10px;
   }
 
 button {
-    padding: 90px 20px; /* Length Height */
+    padding: 40px 20px; /* Length Height of button */
     background-color: #3498db;
     color: #ffffff;
     border: none;
     border-radius: 50px;
     cursor: pointer;
+    transform: translateY(200%);
 }
   
 /* br {
@@ -23,4 +24,5 @@ button {
 
 .divUpright {
     writing-mode: vertical-lr;
+    font-size: xx-large;
 }

@@ -15,18 +15,28 @@ export function Test() {
     var rightSpeed = max;
     var magnitude = (Math.abs(y) / 10 * 6) + 0.4; // 0.4 -> 1
     var decrease = Math.abs(x * max); // 0 -> max
-  
+
     if (y >= 0) {
       if (x > 0) { // right
         rightSpeed -= decrease;
         rightSpeed *= magnitude;
         leftSpeed *= magnitude;
         rightSpeed = Math.max(0, rightSpeed - 3); // 0 -> max-3
-      } else { // left
+        if (max === 15) {
+          leftSpeed /= 1.5;
+        }
+      } else if (x === 0) { // forward
+        rightSpeed = max-1;
+        leftSpeed = max;
+      }
+      else { // left
         leftSpeed -= decrease;
         rightSpeed *= magnitude;
         leftSpeed *= magnitude;
         leftSpeed = Math.max(0, leftSpeed - 3);
+        if (max === 15) {
+          rightSpeed /= 1.5;
+        }
       }
     } else { // backwards
       leftSpeed = 0;
@@ -127,10 +137,8 @@ export function Test() {
         <Joystick controlPlaneShape={JoystickShape.AxisX} pos={{x: joystickPos.x, y:0}} move={handleXMove} stop={handleXStop} stickSize={200} size={200} />
       </div>
 
-      <div class="divUpright">
-        <button onClick={end}>
-          End
-        </button>
+      <div>
+        <Joystick stop={end} stickSize={1} size={1}/>
       </div>
 
       <div>
@@ -138,9 +146,7 @@ export function Test() {
       </div>
 
       <div class="divUpright">
-        <button onClick={changeMax}>
-          {max}
-        </button>
+        <Joystick stop={changeMax} stickSize={1} size={1}/>{max}
       </div>
 
     </div>    
