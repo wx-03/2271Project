@@ -25,7 +25,7 @@ volatile static float leftDc = 0.0;
 volatile static float rightDc = 0.0;
 volatile static uint8_t isMoving = 0;
 volatile static int counter = 0;
-volatile static uint8_t isDone = 0;
+volatile static uint8_t isDone = 1;
 
 uint32_t frequencies_mod[] = {1000};
 
@@ -264,13 +264,15 @@ void buzz_main(void *argument)
   for (;;)
   {
     change_frequency(melody[i]);
-    osDelay(noteDurations[i]);
+    
     // change_frequency(0);
     // osDelay(5);
 	int length = sizeof(melody) / sizeof(melody[0]);
 	if (isDone == 0) {
+		osDelay(noteDurations[i]);
 		i = (i + 1) % length;
 	} else {
+		osDelay(noteDurations[i]/2);
 		i = (i == 0) ? length - 1 : i - 1;
 	}
   }
