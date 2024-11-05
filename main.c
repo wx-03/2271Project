@@ -25,7 +25,7 @@ volatile static float leftDc = 0.0;
 volatile static float rightDc = 0.0;
 volatile static uint8_t isMoving = 0;
 volatile static int counter = 0;
-volatile static uint8_t isDone = 1;
+volatile static uint8_t isDone = 0;
 
 uint32_t frequencies_mod[] = {1000};
 
@@ -263,16 +263,18 @@ void buzz_main(void *argument)
 
   for (;;)
   {
-    change_frequency(melody[i]);
+    
     
     // change_frequency(0);
     // osDelay(5);
 	int length = sizeof(melody) / sizeof(melody[0]);
 	if (isDone == 0) {
+		change_frequency(melody[i]);
 		osDelay(noteDurations[i]);
 		i = (i + 1) % length;
 	} else {
-		osDelay(noteDurations[i]/2);
+		change_frequency(melody[i]*1.5);
+		osDelay(noteDurations[i]/3);
 		i = (i == 0) ? length - 1 : i - 1;
 	}
   }
@@ -292,6 +294,11 @@ void brain_main(void *argument)
     {
       leftDc = -0.5;
       rightDc = -0.5;
+			isDone = 0;
+    }
+    else if (uartData == 0b00000010)
+    {
+      isDone = 1;
     }
     else
     {
