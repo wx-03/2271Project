@@ -3,29 +3,28 @@
 #include CMSIS_device_header
 #include "cmsis_os2.h"
 
-#include "led.h"
-#include "uart.h"
 #define RLED 29 // portE pin 29
 #define CLOCK_SETUP 1
 #define BUZZ 12
 
-
-const int c = 523;
-const int d = 587;
-const int e = 659;
-const int f = 698;
-const int g = 784;
-const int a = 880;
-const int b = 988;
-const int C = 1047;
+#define c 523
+#define d 587
+#define e 659
+#define f 698
+#define g 784
+#define a 880
+#define b 988
+#define C 1047
 
 uint8_t greenPins[] = {8, 9, 10, 11, 2, 3, 4, 5, 20, 21};
 osSemaphoreId_t brainSem;
 osSemaphoreId_t motorSem;
 volatile uint8_t uartData = 0x77;
-volatile float leftDc = 0.0;
-volatile float rightDc = 0.0;
-volatile uint8_t isMoving = 0;
+volatile static float leftDc = 0.0;
+volatile static float rightDc = 0.0;
+volatile static uint8_t isMoving = 0;
+volatile static int counter = 0;
+volatile static uint8_t isDone = 0;
 
 uint32_t frequencies_mod[] = {1000};
 
@@ -121,32 +120,32 @@ void initUART2(void)
 	NVIC_EnableIRQ(UART2_IRQn);
 }
 
-volatile int counter = 0;
 void UART2_IRQHandler()
 {
 	NVIC_ClearPendingIRQ(UART2_IRQn);
 	if (UART2_S1 & UART_S1_RDRF_MASK)
 	{
 		uartData = UART2->D;
+		osSemaphoreRelease(brainSem);
 	}
-	osSemaphoreRelease(brainSem);
 	// UART2->D = uartData;
 }
 
 void initBuzzerPWM(void)
 {
-	PORTB->PCR[BUZZER_PIN] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[BUZZER_PIN] |= PORT_PCR_MUX(3);
+	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
+	PORTA->PCR[BUZZ] &= ~PORT_PCR_MUX_MASK;
+	PORTA->PCR[BUZZ] |= PORT_PCR_MUX(3);
 	SIM->SCGC6 |= SIM_SCGC6_TPM1_MASK;
 	SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
 	SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
-	TPM1->MOD = TIMER_THRESHOLD;
+	TPM1->MOD = 7499;
 	TPM1->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
 	TPM1->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
 	TPM1->SC &= ~(TPM_SC_CPWMS_MASK);
 	TPM1_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
 	TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
-	TPM1_C0V = TIMER_THRESHOLD / 2;
+	TPM1_C0V = 7499 / 16;
 }
 
 void initMotorPWM(void)
@@ -219,9 +218,24 @@ void green_blinky_main(void *argument)
 	{
 		if (isMoving)
 		{
+			for (int i = 0; i < 10; i++)
+			{
+				if (0 <= i && i <= 3)
+				{
+					PTB->PCOR |= MASK(greenPins[i]);
+				}
+				else
+				{
+					PTE->PCOR |= MASK(greenPins[i]);
+				}
+			}
 			// Running Mode
 			for (int i = 0; i < 10; i++)
 			{
+				if (!isMoving)
+				{
+					break;
+				}
 				if (0 <= i && i <= 3)
 				{
 					PTB->PTOR |= MASK(greenPins[i]);
@@ -263,14 +277,23 @@ void buzz_main(void *argument)
 {
 	int i = 0;
 
-	int major[] = {c, d, e, f, g, a, b, C};
 	for (;;)
 	{
 		change_frequency(melody[i]);
-		osDelay(noteDurations[i]);
+
 		// change_frequency(0);
 		// osDelay(5);
-		i = (i + 1) % (sizeof(melody) / sizeof(melody[0]));
+		int length = sizeof(melody) / sizeof(melody[0]);
+		if (isDone == 0)
+		{
+			osDelay(noteDurations[i]);
+			i = (i + 1) % length;
+		}
+		else
+		{
+			osDelay(noteDurations[i] / 2);
+			i = (i == 0) ? length - 1 : i - 1;
+		}
 	}
 }
 
@@ -278,23 +301,33 @@ void brain_main(void *argument)
 {
 	for (;;)
 	{
-		isMoving = 1;
 		osSemaphoreAcquire(brainSem, osWaitForever);
 		if (uartData == 0b00000000)
 		{
 			leftDc = 0;
 			rightDc = 0;
-			isMoving = 0;
 		}
 		else if (uartData == 0b00000001)
 		{
 			leftDc = -0.5;
 			rightDc = -0.5;
 		}
+		else if (uartData == 0b00000010)
+		{
+			isDone = 1;
+		}
 		else
 		{
 			leftDc = ((uartData >> 4)) / 15.0;
 			rightDc = ((uartData & 0b00001111)) / 15.0;
+		}
+		if (leftDc == 0 && rightDc == 0)
+		{
+			isMoving = 0;
+		}
+		else
+		{
+			isMoving = 1;
 		}
 		osSemaphoreRelease(motorSem);
 	}
@@ -335,7 +368,6 @@ int main(void)
 	initLedGpio();
 	initBuzzerPWM();
 	initMotorPWM();
-
 	brainSem = osSemaphoreNew(1, 0, NULL);
 	motorSem = osSemaphoreNew(1, 0, NULL);
 

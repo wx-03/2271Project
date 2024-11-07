@@ -4,10 +4,14 @@ import { JoystickShape } from "react-joystick-component";
 import "./joystick.css"
 
 export function Test() {
+  let sendRate = 50;
+  let up = 15;
+  let down = 11.5;
   const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
   const [binarySpeed, setBinarySpeed] = useState(119);
   const [currTime, setCurrTime] = useState(Date.now());
-  const [max, setMax] = useState(15);
+  const [max, setMax] = useState(up);
+
 
   function joystickToWheelSpeeds(x, y) {
 
@@ -22,11 +26,11 @@ export function Test() {
         rightSpeed *= magnitude;
         leftSpeed *= magnitude;
         rightSpeed = Math.max(0, rightSpeed - 3); // 0 -> max-3
-        if (max === 15) {
+        if (max === up) {
           leftSpeed /= 1.5;
         }
       } else if (x === 0) { // forward
-        rightSpeed = max-1;
+        rightSpeed = max;
         leftSpeed = max;
       }
       else { // left
@@ -34,7 +38,7 @@ export function Test() {
         rightSpeed *= magnitude;
         leftSpeed *= magnitude;
         leftSpeed = Math.max(0, leftSpeed - 3);
-        if (max === 15) {
+        if (max === up) {
           rightSpeed /= 1.5;
         }
       }
@@ -55,19 +59,19 @@ export function Test() {
 
   function callReq() {
     var request = new XMLHttpRequest();
-    request.open('POST', 'http://192.168.114.249/data');
+    request.open('POST', 'http://192.168.1.249/data');
     request.send(JSON.stringify({ data: binarySpeed }))
   }
 
   function callStop() {
     var request = new XMLHttpRequest();
-    request.open('POST', 'http://192.168.114.249/data');
+    request.open('POST', 'http://192.168.1.249/data');
     request.send(JSON.stringify({ data: 0 }))
   }
 
   function callEnd() {
     var request = new XMLHttpRequest();
-    request.open('POST', 'http://192.168.114.249/data');
+    request.open('POST', 'http://192.168.1.249/data');
     request.send(JSON.stringify({ data: 2 }))
   }
 
@@ -78,7 +82,7 @@ export function Test() {
       joystickPos.x
     );
     setSpeed(leftWheelSpeed, rightWheelSpeed);
-    if (Date.now() - currTime > 50) {
+    if (Date.now() - currTime > sendRate) {
       setCurrTime(Date.now());
       callReq();
     }
@@ -118,10 +122,10 @@ export function Test() {
   };
 
   const changeMax = () => {
-    if (max === 15) {
-      setMax(12);
+    if (max === down) {
+      setMax(up);
     } else {
-      setMax(15);
+      setMax(down);
     }
   }
 
@@ -138,7 +142,7 @@ export function Test() {
       </div>
 
       <div>
-        <Joystick stop={end} stickSize={1} size={1}/>
+        <Joystick class="buttonStop" stop={end} stickSize={70} size={70}/>
       </div>
 
       <div>
@@ -146,7 +150,7 @@ export function Test() {
       </div>
 
       <div class="divUpright">
-        <Joystick stop={changeMax} stickSize={1} size={1}/>{max}
+        <Joystick stop={changeMax} stickSize={110} size={110}/>{max}
       </div>
 
     </div>    
