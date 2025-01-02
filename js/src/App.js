@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Data from "./data";
 import { Test } from './Test';
 
 function App() {
@@ -9,7 +8,6 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Test />} />
-          <Route path="/data" element={<Test />} />
         </Routes>
       </BrowserRouter>
     </>

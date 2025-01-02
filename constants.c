@@ -1,7 +1,5 @@
 #include "MKL25Z4.h"
 
-#include "MKL25Z4.h"
-
 #define BAUD_RATE 9600
 #define TIMER_THRESHOLD 7499
 #define UART2_INT_PRIO 128

@@ -7,7 +7,6 @@
 #define CLOCK_SETUP 1
 #define BUZZ 12
 
-
 #define c 523
 #define d 587
 #define e 659
@@ -215,7 +214,8 @@ void red_blinky_main(void *argument)
 
 void green_blinky_main(void *argument)
 {
-	for (;;) {
+	for (;;)
+	{
 		if (isMoving)
 		{
 			for (int i = 0; i < 10; i++) {
@@ -232,27 +232,36 @@ void green_blinky_main(void *argument)
 				}
 				if (0 <= i && i <= 3) {
 					PTB->PTOR |= MASK(greenPins[i]);
-				} else {
+				}
+				else
+				{
 					PTE->PTOR |= MASK(greenPins[i]);
 				}
-				osDelay(250U);	
-				if (0 <= i && i <= 3) {
+				osDelay(250U);
+				if (0 <= i && i <= 3)
+				{
 					PTB->PTOR |= MASK(greenPins[i]);
-				} else {
+				}
+				else
+				{
 					PTE->PTOR |= MASK(greenPins[i]);
 				}
-			}	
+			}
 		}
 		else
 		{
 			// Light up all
-			for (int i = 0; i < 10; i++) {
-				if (0 <= i && i <= 3) {
+			for (int i = 0; i < 10; i++)
+			{
+				if (0 <= i && i <= 3)
+				{
 					PTB->PSOR |= MASK(greenPins[i]);
-				} else {
+				}
+				else
+				{
 					PTE->PSOR |= MASK(greenPins[i]);
 				}
-			}			
+			}
 		}
 	}
 }
