@@ -1,11 +1,17 @@
 #include "MKL25Z4.h"
 
-#define RED_LED 18   // PortB Pin 18
-#define GREEN_LED 19 // PortB Pin 19
-#define BLUE_LED 1   // PortD Pin 1
 #define BAUD_RATE 9600
-#define UART_RX_PORTE23 23
+#define TIMER_THRESHOLD 7499
 #define UART2_INT_PRIO 128
+
+// Pins
+#define BUZZER_PIN 0                                      // PB0 - TPM1_CH0
+#define UART_RX_PIN 23                                    // PE23
+#define MOTOR_DRIVER_AIN1 2                               // PB2 - TPM2_CH0
+#define MOTOR_DRIVER_AIN2 3                               // PB3 - TPM2_CH1
+#define MOTOR_DRIVER_BIN1 1                               // PC1 - TPM0_CH0
+#define MOTOR_DRIVER_BIN2 2                               // PC2 - TPM0_CH1
+#define RLED 29                                           // PE29
 
 #define MASK(x) (1 << (x))
 
